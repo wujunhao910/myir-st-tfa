@@ -58,6 +58,7 @@ struct stm32mp_ddr_info {
 };
 
 #define TIMEOUT_US_1S	1000000U
+#define TIMEOUT_500US	500U
 
 void stm32mp_ddr_set_reg(const struct stm32mp_ddr_priv *priv, enum stm32mp_ddr_reg_type type,
 			 const void *param, const struct stm32mp_ddr_reg_info *ddr_registers);
