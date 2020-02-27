@@ -195,6 +195,13 @@ enum ddr_type {
 					 SRAM1_SIZE - \
 					 PLATFORM_MTD_MAX_PAGE_SIZE)
 #endif
+
+/*
+ * Only used for MTD devices that need some backup blocks.
+ * Must define a number of reserved blocks (depends on devices).
+ */
+#define PLATFORM_MTD_BACKUP_BLOCKS	U(20)	/* (20 * MTD block size) */
+
 /*******************************************************************************
  * STM32MP1 device/io map related constants (used for MMU)
  ******************************************************************************/
