@@ -193,13 +193,13 @@ static void print_boot_device(boot_api_context_t *boot_context)
 	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_EMMC:
 		INFO("Using EMMC\n");
 		break;
-	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NOR_QSPI:
-		INFO("Using QSPI NOR\n");
+	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NOR_SPI:
+		INFO("Using SPI NOR\n");
 		break;
 	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NAND_FMC:
 		INFO("Using FMC NAND\n");
 		break;
-	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NAND_QSPI:
+	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NAND_SPI:
 		INFO("Using SPI NAND\n");
 		break;
 	case BOOT_API_CTX_BOOT_INTERFACE_SEL_SERIAL_UART:
@@ -440,7 +440,7 @@ void stm32mp_io_setup(void)
 		break;
 #endif
 #if STM32MP_SPI_NOR
-	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NOR_QSPI:
+	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NOR_SPI:
 		dmbsy();
 		boot_spi_nor(boot_context);
 		break;
@@ -452,7 +452,7 @@ void stm32mp_io_setup(void)
 		break;
 #endif
 #if STM32MP_SPI_NAND
-	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NAND_QSPI:
+	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NAND_SPI:
 		dmbsy();
 		boot_spi_nand(boot_context);
 		break;
@@ -536,7 +536,7 @@ int bl2_plat_handle_pre_image_load(unsigned int image_id)
 	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NAND_FMC:
 #endif
 #if STM32MP_SPI_NAND
-	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NAND_QSPI:
+	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NAND_SPI:
 #endif
 /*
  * With FWU Multi Bank feature enabled, the selection of
@@ -550,7 +550,7 @@ int bl2_plat_handle_pre_image_load(unsigned int image_id)
 #endif
 
 #if STM32MP_SPI_NOR
-	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NOR_QSPI:
+	case BOOT_API_CTX_BOOT_INTERFACE_SEL_FLASH_NOR_SPI:
 /*
  * With FWU Multi Bank feature enabled, the selection of
  * the image to boot will be done by fwu_init calling the
