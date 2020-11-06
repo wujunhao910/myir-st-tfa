@@ -725,7 +725,7 @@ bool stm32mp1_is_wakeup_from_standby(void)
 	}
 #endif
 
-	return true;
+	return stm32_pm_context_is_valid();
 }
 
 uintptr_t stm32_get_bkpr_boot_mode_addr(void)
