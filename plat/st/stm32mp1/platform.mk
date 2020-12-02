@@ -365,6 +365,10 @@ ifneq (${DECRYPTION_SUPPORT},none)
 BL2_SOURCES		+=	drivers/io/io_encrypted.c
 endif
 
+ifeq ($(STM32MP13),1)
+BL2_SOURCES		+=	drivers/st/mce/stm32_mce.c
+endif
+
 ifeq (${TRUSTED_BOARD_BOOT},1)
 AUTH_SOURCES		:=	drivers/auth/auth_mod.c					\
 				drivers/auth/crypto_mod.c				\
