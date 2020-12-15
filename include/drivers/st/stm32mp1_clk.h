@@ -32,6 +32,8 @@ bool stm32mp1_rcc_is_mckprot(void);
 void stm32mp1_clk_rcc_regs_lock(void);
 void stm32mp1_clk_rcc_regs_unlock(void);
 
+void stm32mp1_clk_mcuss_protect(bool enable);
+
 #ifdef STM32MP_SHARED_RESOURCES
 void stm32mp1_register_clock_parents_secure(unsigned long id);
 #endif
