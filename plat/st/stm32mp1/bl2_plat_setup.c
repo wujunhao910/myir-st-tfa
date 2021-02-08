@@ -299,6 +299,9 @@ void bl2_el3_plat_arch_setup(void)
 		goto skip_console_init;
 	}
 
+	/* Enter in boot mode */
+	stm32mp1_syscfg_boot_mode_enable();
+
 	stm32mp_print_cpuinfo();
 
 	board_model = dt_get_board_model();
@@ -579,4 +582,7 @@ void bl2_el3_plat_prepare_exit(void)
 	}
 
 	stm32mp1_security_setup();
+
+	/* end of boot mode */
+	stm32mp1_syscfg_boot_mode_disable();
 }
