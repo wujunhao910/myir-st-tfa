@@ -334,6 +334,7 @@ PLAT_BL_COMMON_SOURCES	+=	drivers/arm/tzc/tzc400.c				\
 				drivers/st/pmic/stpmic1.c				\
 				drivers/st/regulator/regulator_core.c			\
 				drivers/st/regulator/regulator_fixed.c			\
+				drivers/st/regulator/regulator_gpio.c			\
 				drivers/st/reset/stm32mp1_reset.c			\
 				plat/st/common/stm32mp_dt.c				\
 				plat/st/stm32mp1/stm32mp1_context.c			\
