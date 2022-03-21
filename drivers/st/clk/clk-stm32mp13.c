@@ -1007,6 +1007,11 @@ static void stm32_enable_oscillator_lse(struct stm32_clk_priv *priv)
 		return;
 	}
 
+	/* Do not reconfigure LSE if already enabled */
+	if (_clk_stm32_gate_is_enabled(priv, osc_data->gate_id)) {
+		return;
+	}
+
 	clk_oscillator_set_bypass(priv, _CK_LSE, digbyp, bypass);
 
 	clk_oscillator_set_drive(priv, _CK_LSE, drive);
