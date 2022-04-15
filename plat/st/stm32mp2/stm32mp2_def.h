@@ -273,6 +273,7 @@ enum ddr_type {
 #define HW2_OTP				"hw2_otp"
 #define NAND_OTP			"otp16"
 #define NAND2_OTP			"otp20"
+#define BOARD_ID_OTP			"board_id"
 
 /* OTP mask */
 /* PACKAGE */
