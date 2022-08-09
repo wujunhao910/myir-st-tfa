@@ -318,6 +318,8 @@
 			interrupts = <GIC_SPI 92 IRQ_TYPE_LEVEL_HIGH>;
 			clocks = <&rcc QSPI_K>;
 			resets = <&rcc QSPI_R>;
+			#address-cells = <1>;
+			#size-cells = <0>;
 			status = "disabled";
 		};
 
@@ -490,7 +492,7 @@
 			pkh_otp: pkh_otp@60 {
 				reg = <0x60 0x20>;
 			};
-			mac_addr: mac_addr@e4 {
+			ethernet_mac_address: mac@e4 {
 				reg = <0xe4 0x8>;
 				st,non-secure-otp;
 			};
