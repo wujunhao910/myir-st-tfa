@@ -66,48 +66,41 @@ This file implements defines like:
 Defining clock source distribution with property st,clksrc
 ==========================================================
 
-- st,clksrc : The clock sources configuration array in a platform specific
-              order.
+- st,clksrc : used to configure the peripherals kernel clock selection.
+
+  The property is a list of peripheral kernel clock source identifiers defined
+  by macros CLK_<KERNEL-CLOCK>_<PARENT-CLOCK> as defined by header file
+  dt-bindings/clock/stm32mp13-clksrc.h.
+
+  st,clksrc may not list all the kernel clocks and has no ordering requirements.
 
   Property can be used to configure the clock distribution tree.
-  When used, it shall describe the whole distribution tree.
-
-  For the STM32MP15x family there are 9 clock sources selector which are
-  configured in the following order:
-	MPU AXI MCU PLL12 PLL3 PLL4 RTC MCO1 MCO2
-
-  Clock source configuration values are defined by macros CLK_<NAME>_<SOURCE>
-  from dt-bindings/clock/stm32mp1-clksrc.h.
 
   Example:
 	st,clksrc = <
 		CLK_MPU_PLL1P
 		CLK_AXI_PLL2P
 		CLK_MCU_PLL3P
-		CLK_PLL12_HSE
-		CLK_PLL3_HSE
-		CLK_PLL4_HSE
-		CLK_RTC_LSE
-		CLK_MCO1_DISABLED
-		CLK_MCO2_DISABLED
+		CLK_CKPER_HSE
+		CLK_FMC_ACLK
+		CLK_QSPI_ACLK
+		CLK_ETH_DISABLED
+		CLK_SDMMC12_PLL4P
 	>;
 
 Defining clock dividers with property st,clkdiv
 ===============================================
 
-- st,clkdiv : The clock main dividers value specified in an array
-              in a platform specific order.
-
-  When used, it shall describe the whole clock dividers tree.
+- st,clkdiv : The property is a list of dividers defined
+              by macros DIV(DIV_<DIV-CLOCK>, value) as defined by header file
+	      dt-bindings/clock/stm32mp15-clksrc.h.
 
   Property can be used to configure the clock main dividers value.
-  When used, it shall describe the whole clock dividers tree.
 
   For the STM32MP15x family there are 11 dividers values expected.
-  They shall be configured in the following order:
 		MPU AXI MCU APB1 APB2 APB3 APB4 APB5 RTC MCO1 MCO2
 
-  The each divider value uses the DIV coding defined in RCC associated
+  Each divider value uses the DIV coding defined in RCC associated
   register RCC_xxxDIVR. In most cases, it is:
 		0x0: not divided
 		0x1: division by 2
@@ -115,49 +108,36 @@ Defining clock dividers with property st,clkdiv
 		0x3: division by 8
 		...
 
-  Note that for RTC MCO1 MCO2, the coding is different:
+  Note that the coding is different for:
+
+  DIV_RTC DIV_MCO1 DIV_MCO2
 		0x0: not divided
 		0x1: division by 2
 		0x2: division by 3
 		0x3: division by 4
 		...
 
+  DIV_MPU
+		0x0: no clock generated
+		0x1: division by 2
+		0x2: division by 3
+		0x3: division by 4
+		...
+		0xf: division by 16
+
   Example:
 	st,clkdiv = <
-		1 /*MPU*/
-		0 /*AXI*/
-		0 /*MCU*/
-		1 /*APB1*/
-		1 /*APB2*/
-		1 /*APB3*/
-		1 /*APB4*/
-		2 /*APB5*/
-		23 /*RTC*/
-		0 /*MCO1*/
-		0 /*MCO2*/
-	>;
-
-Optional Properties:
-Defining peripherals kernel clock tree distribution with property st,pkcs
-=========================================================================
-
-- st,pkcs : used to configure the peripherals kernel clock selection.
-
-  The property is a list of peripheral kernel clock source identifiers defined
-  by macros CLK_<KERNEL-CLOCK>_<PARENT-CLOCK> as defined by header file
-  dt-bindings/clock/stm32mp1-clksrc.h.
-
-  st,pkcs may not list all the kernel clocks and has no ordering requirements.
-
-  Example:
-	st,pkcs = <
-		CLK_STGEN_HSE
-		CLK_CKPER_HSI
-		CLK_USBPHY_PLL2P
-		CLK_DSI_PLL2Q
-		CLK_I2C46_HSI
-		CLK_UART1_HSI
-		CLK_UART24_HSI
+		DIV(DIV_MPU, 1)
+		DIV(DIV_AXI, 0)
+		DIV(DIV_MCU, 0)
+		DIV(DIV_APB1, 1)
+		DIV(DIV_APB2, 1)
+		DIV(DIV_APB3, 1)
+		DIV(DIV_APB4, 1)
+		DIV(DIV_APB5, 2)
+		DIV(DIV_RTC, 23)
+		DIV(DIV_MCO1, 0)
+		DIV(DIV_MCO2, 0)
 	>;
 
 Defining peripheral PLL frequencies
@@ -165,7 +145,7 @@ Defining peripheral PLL frequencies
 
 - children for a PLL static configuration with "st,stm32mp1-pll" compatible
 
-  Each PLL children nodes for PLL1 to PLL4 (see ref manual for details)
+  Each PLL children node for PLL1 to PLL4 (see ref manual for details)
   are listed with associated reg 0 to 3.
 
   PLL2, PLL3 or PLL4 are off when their associated nodes are absent or
@@ -177,65 +157,96 @@ Defining peripheral PLL frequencies
   The node st,pll@0 node should be absent; it is only used if you want to
   override the PLL1 properties computed by TF-A (clock spreading for example).
 
-  Here are the available properties for each PLL node:
+      Here are the available properties for each PLL node:
     - compatible: should be "st,stm32mp1-pll"
 
     - reg: index of the pll instance
 
-    - cfg: The parameters for PLL configuration in the following order:
-           DIVM DIVN DIVP DIVQ DIVR Output.
+    - st,pll: Phandle of the default PLL configuration.
+              A PLL can have several configuration (5 max) and should be described in a subnode
+              just below.
 
-	DIVx values are defined as in RCC spec:
-		0x0: bypass (division by 1)
-		0x1: division by 2
-		0x2: division by 3
-		0x3: division by 4
-		...
+    - pllx_cfgx node: The PLL configuration node is composed of 2 mandatory parameters:
+        - st,pll_vco: Phandle of PLL VCO configuration.
+	              See description of 'st,pll_vco' node.
 
-	Output contains a bitfield for each output value (1:ON/0:OFF)
-		BIT(0) => output P : DIVPEN
-		BIT(1) => output Q : DIVQEN
-		BIT(2) => output R : DIVREN
-	  NB: macro PQR(p,q,r) can be used to build this value
-	      with p,q,r = 0 or 1.
+        - st,pll_div_pqr: The parameters for PLL configuration in the following order:
+                          DIVP DIVQ DIVR Output.
 
-    - frac: Fractional part of the multiplication factor
-            (optional, PLL is in integer mode when absent).
+			  DIVx values are defined as in RCC spec:
+			  0x0: bypass (division by 1)
+			  0x1: division by 2
+			  0x2: division by 3
+			  0x3: division by 4
+			  ...
+  Note that in the next stage (e.g. OP-TEE) the phandle of the default PLL configuration
+  ('st,pll') is optional (the configuration of TF-A will be kept).
 
-    - csg: Clock Spreading Generator (optional) with parameters in the
-	   following order: MOD_PER INC_STEP SSCG_MODE.
+- st,pll_vco node: This node will contain all VCO configuration of all PLLs in subnodes.
+                   We will find theses parameters in each subnode.
 
-	MOD_PER: Modulation Period Adjustment
-	INC_STEP: Modulation Depth Adjustment
-	SSCG_MODE: Spread spectrum clock generator mode, with associated
-		   defined from stm32mp1-clksrc.h:
-			- SSCG_MODE_CENTER_SPREAD = 0
-			- SSCG_MODE_DOWN_SPREAD = 1
+	   -src: Clock source configuration values are defined by macros CLK_<NAME>_<SOURCE>
+                 from dt-bindings/clock/stm32mp13-clksrc.h.
+
+	   -divmn: The parameters for PLL divider (DIVM) and multiplication factor (DIVN)
+	           configuration.
+
+	   - frac: Fractional part of the multiplication factor
+                   (optional, PLL is in integer mode when absent).
+
+	   - csg: Clock Spreading Generator (optional) with parameters in the
+	          following order: MOD_PER INC_STEP SSCG_MODE.
+
+	          MOD_PER: Modulation Period Adjustment
+		  INC_STEP: Modulation Depth Adjustment
+		  SSCG_MODE: Spread spectrum clock generator mode, with associated
+			     defined from stm32mp13-clksrc.h:
+		               - SSCG_MODE_CENTER_SPREAD = 0
+			       - SSCG_MODE_DOWN_SPREAD = 1
 
     Example:
-	st,pll@0 {
+	st,pll_vco {
+		pll1_vco_1300Mhz: pll1-vco-1300Mhz {
+			src = <CLK_PLL12_HSE>;
+			divmn = <2 80>;
+			frac = <0x800>;
+		};
+		...
+		pll2_vco_1066Mhz: pll2-vco-1066Mhz {
+			src = <CLK_PLL12_HSE>;
+			divmn = <2 65>;
+			frac = <0x1400>;
+			csg = <10 20 1>;
+		};
+		...
+	};
+
+	pll1: st,pll@0 {
 		compatible = "st,stm32mp1-pll";
 		reg = <0>;
-		cfg = <1 53 0 0 0 1>;
-		frac = <0x810>;
+
+		st,pll = <&pll1_cfg1>;
+
+		pll1_cfg1: pll1_cfg1 {
+			st,pll_vco = <&pll1_vco_1300Mhz>;
+			st,pll_div_pqr = <0 0 0>;
+		};
 	};
+
 	st,pll@1 {
 		compatible = "st,stm32mp1-pll";
 		reg = <1>;
-		cfg = <1 43 1 0 0 PQR(0,1,1)>;
-		csg = <10 20 1>;
+
+		st,pll = <&pll2_cfg1>;
+
+		pll2_cfg1: pll2_cfg1 {
+			st,pll_vco = <&pll2_vco_1066Mhz>;
+			st,pll_div_pqr = <1 0 1>;
+		};
 	};
-	st,pll@2 {
-		compatible = "st,stm32mp1-pll";
-		reg = <2>;
-		cfg = <2 85 3 13 3 0>;
-		csg = <10 20 SSCG_MODE_CENTER_SPREAD>;
-	};
-	st,pll@3 {
-		compatible = "st,stm32mp1-pll";
-		reg = <3>;
-		cfg = <2 78 4 7 9 3>;
-	};
+
+  Note: PLL1 and PLL2 have same source clock, if source clock is different
+  between PLL1 and PLL2 a panic will be generated.
 
 Fixed clocks description
 ========================
@@ -252,7 +263,7 @@ At boot the clock tree initialization will
   - enable oscillators present in device tree and not disabled
     (node with status="disabled"),
   - disable HSI oscillator if the node is absent (always activated by bootrom)
-    and not disabled (node with status="disabled").
+    or disabled (node with status="disabled").
 
 Optional properties :
 
@@ -273,7 +284,7 @@ a) for external oscillator: "clk-lse", "clk-hse"
 			clk_hse: clk-hse {
 				#clock-cells = <0>;
 				compatible = "fixed-clock";
-				clock-frequency = <64000000>;
+				clock-frequency = <24000000>;
 				st,bypass;
 			};
 
@@ -329,7 +340,7 @@ calibration on detection of an interrupt raised by MCU.
 
 - st,hsi-cal: used to enable HSI clock calibration feature.
 
-- st,csi-cal; used to enable CSI clock calibration feature.
+- st,csi-cal: used to enable CSI clock calibration feature.
 
 - st,cal-sec: used to enable periodic calibration every specified seconds from
   secure monitor. Time must be given in seconds. If not specified, calibration
@@ -396,101 +407,119 @@ Example of clock tree initialization
 			secure-interrupts = <GIC_SPI 145 IRQ_TYPE_LEVEL_HIGH>;
 			secure-interrupt-names = "wakeup";
 
-			st,clksrc = <
-				CLK_MPU_PLL1P
-				CLK_AXI_PLL2P
-				CLK_MCU_PLL3P
-				CLK_PLL12_HSE
-				CLK_PLL3_HSE
-				CLK_PLL4_HSE
-				CLK_RTC_LSE
-				CLK_MCO1_DISABLED
-				CLK_MCO2_DISABLED
-			>;
+	st,clksrc = <
+		CLK_MPU_PLL1P
+		CLK_AXI_PLL2P
+		CLK_MCU_PLL3P
+		CLK_RTC_LSE
+		CLK_MCO1_DISABLED
+		CLK_MCO2_DISABLED
+		CLK_CKPER_HSE
+		CLK_FMC_ACLK
+		CLK_QSPI_ACLK
+		CLK_ETH_PLL4P
+		CLK_SDMMC12_PLL4P
+		CLK_DSI_DSIPLL
+		CLK_STGEN_HSE
+		CLK_USBPHY_HSE
+		CLK_SPI2S1_PLL3Q
+		CLK_SPI2S23_PLL3Q
+		CLK_SPI45_HSI
+		CLK_SPI6_HSI
+		CLK_I2C46_HSI
+		CLK_SDMMC3_PLL4P
+		CLK_USBO_USBPHY
+		CLK_ADC_CKPER
+		CLK_CEC_LSE
+		CLK_I2C12_HSI
+		CLK_I2C35_HSI
+		CLK_UART1_HSI
+		CLK_UART24_HSI
+		CLK_UART35_HSI
+		CLK_UART6_HSI
+		CLK_UART78_HSI
+		CLK_SPDIF_PLL4P
+		CLK_FDCAN_PLL4R
+		CLK_SAI1_PLL3Q
+		CLK_SAI2_PLL3Q
+		CLK_SAI3_PLL3Q
+		CLK_SAI4_PLL3Q
+		CLK_RNG1_CSI
+		CLK_RNG2_LSI
+		CLK_LPTIM1_PCLK1
+		CLK_LPTIM23_PCLK3
+		CLK_LPTIM45_LSE
+	>;
 
-			st,clkdiv = <
-				1 /*MPU*/
-				0 /*AXI*/
-				0 /*MCU*/
-				1 /*APB1*/
-				1 /*APB2*/
-				1 /*APB3*/
-				1 /*APB4*/
-				2 /*APB5*/
-				23 /*RTC*/
-				0 /*MCO1*/
-				0 /*MCO2*/
-			>;
+	st,clkdiv = <
+		DIV(DIV_MPU, 1)
+		DIV(DIV_AXI, 0)
+		DIV(DIV_MCU, 0)
+		DIV(DIV_APB1, 1)
+		DIV(DIV_APB2, 1)
+		DIV(DIV_APB3, 1)
+		DIV(DIV_APB4, 1)
+		DIV(DIV_APB5, 2)
+		DIV(DIV_RTC, 23)
+		DIV(DIV_MCO1, 0)
+		DIV(DIV_MCO2, 0)
+	>;
 
-			st,pkcs = <
-				CLK_CKPER_HSE
-				CLK_FMC_ACLK
-				CLK_QSPI_ACLK
-				CLK_ETH_DISABLED
-				CLK_SDMMC12_PLL4P
-				CLK_DSI_DSIPLL
-				CLK_STGEN_HSE
-				CLK_USBPHY_HSE
-				CLK_SPI2S1_PLL3Q
-				CLK_SPI2S23_PLL3Q
-				CLK_SPI45_HSI
-				CLK_SPI6_HSI
-				CLK_I2C46_HSI
-				CLK_SDMMC3_PLL4P
-				CLK_USBO_USBPHY
-				CLK_ADC_CKPER
-				CLK_CEC_LSE
-				CLK_I2C12_HSI
-				CLK_I2C35_HSI
-				CLK_UART1_HSI
-				CLK_UART24_HSI
-				CLK_UART35_HSI
-				CLK_UART6_HSI
-				CLK_UART78_HSI
-				CLK_SPDIF_PLL4P
-				CLK_FDCAN_PLL4Q
-				CLK_SAI1_PLL3Q
-				CLK_SAI2_PLL3Q
-				CLK_SAI3_PLL3Q
-				CLK_SAI4_PLL3Q
-				CLK_RNG1_LSI
-				CLK_RNG2_LSI
-				CLK_LPTIM1_PCLK1
-				CLK_LPTIM23_PCLK3
-				CLK_LPTIM45_LSE
-			>;
+	st,pll_vco {
+		pll2_vco_1066Mhz: pll2-vco-1066Mhz {
+			src = <CLK_PLL12_HSE>;
+			divmn = <2 65>;
+			frac = <0x1400>;
+		};
 
-			/* VCO = 1300.0 MHz => P = 650 (CPU) */
-			pll1: st,pll@0 {
-				compatible = "st,stm32mp1-pll";
-				reg = <0>;
-				cfg = <2 80 0 0 0 PQR(1,0,0)>;
-				frac = <0x800>;
-			};
+		pll3_vco_417Mhz: pll2-vco-417_8Mhz {
+			src = <CLK_PLL3_HSE>;
+			divmn = <1 33>;
+			frac = <0x1a04>;
+		};
 
-			/* VCO = 1066.0 MHz => P = 266 (AXI), Q = 533 (GPU),
-			                       R = 533 (DDR) */
-			pll2: st,pll@1 {
-				compatible = "st,stm32mp1-pll";
-				reg = <1>;
-				cfg = <2 65 1 0 0 PQR(1,1,1)>;
-				frac = <0x1400>;
-			};
+		pll4_vco_594Mhz: pll2-vco-594Mhz {
+			src = <CLK_PLL4_HSE>;
+			divmn = <3 98>;
+		};
+	};
 
-			/* VCO = 417.8 MHz => P = 209, Q = 24, R = 11 */
-			pll3: st,pll@2 {
-				compatible = "st,stm32mp1-pll";
-				reg = <2>;
-				cfg = <1 33 1 16 36 PQR(1,1,1)>;
-				frac = <0x1a04>;
-			};
+	/* VCO = 1066.0 MHz => P = 266 (AXI), Q = 533 (GPU), R = 533 (DDR) */
+	pll2: st,pll@1 {
+		compatible = "st,stm32mp1-pll";
+		reg = <1>;
 
-			/* VCO = 594.0 MHz => P = 99, Q = 74, R = 74 */
-			pll4: st,pll@3 {
-				compatible = "st,stm32mp1-pll";
-				reg = <3>;
-				cfg = <3 98 5 7 7 PQR(1,1,1)>;
-			};
+		st,pll = <&pll2_cfg1>;
+
+		pll2_cfg1: pll2_cfg1 {
+			st,pll_vco = <&pll2_vco_1066Mhz>;
+			st,pll_div_pqr = <1 0 0>;
+		};
+	};
+
+	/* VCO = 417.8 MHz => P = 209, Q = 24, R = 11 */
+	pll3: st,pll@2 {
+		compatible = "st,stm32mp1-pll";
+		reg = <2>;
+
+		st,pll = <&pll3_cfg1>;
+
+		pll3_cfg1: pll3_cfg1 {
+			st,pll_vco = <&pll3_vco_417Mhz>;
+			st,pll_div_pqr = <1 16 36>;
+		};
+	};
+
+	/* VCO = 594.0 MHz => P = 99, Q = 74, R = 74 */
+	pll4: st,pll@3 {
+		compatible = "st,stm32mp1-pll";
+		reg = <3>;
+
+		st,pll = <&pll4_cfg1>;
+
+		pll4_cfg1: pll4_cfg1 {
+			st,pll_vco = <&pll4_vco_594Mhz>;
+			st,pll_div_pqr = <5 7 7>;
 		};
 	};
 };
