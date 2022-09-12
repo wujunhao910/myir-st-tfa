@@ -23,7 +23,7 @@ enum stm32mp_osc_id {
 extern const char *stm32mp_osc_node_label[NB_OSC];
 
 int stm32mp1_clk_probe(void);
-int stm32mp1_clk_init(void);
+int stm32mp1_clk_init(uint32_t pll1_freq_khz);
 
 bool stm32mp1_rcc_is_secure(void);
 bool stm32mp1_rcc_is_mckprot(void);

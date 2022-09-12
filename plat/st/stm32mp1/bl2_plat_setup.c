@@ -40,6 +40,8 @@
 #include <stm32mp1_context.h>
 #include <stm32mp1_dbgmcu.h>
 
+#define PLL1_NOMINAL_FREQ_IN_KHZ	650000U /* 650MHz */
+
 #if DEBUG
 static const char debug_msg[] = {
 	"***************************************************\n"
@@ -304,7 +306,7 @@ void bl2_el3_plat_arch_setup(void)
 		panic();
 	}
 
-	if (stm32mp1_clk_init() < 0) {
+	if (stm32mp1_clk_init(PLL1_NOMINAL_FREQ_IN_KHZ) < 0) {
 		panic();
 	}
 
