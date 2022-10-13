@@ -42,6 +42,13 @@
 
 #define PLL1_NOMINAL_FREQ_IN_KHZ	650000U /* 650MHz */
 
+#if STM32MP13
+IMPORT_SYM(uintptr_t, __BSS_START__, BSS_START);
+IMPORT_SYM(uintptr_t, __BSS_END__, BSS_END);
+IMPORT_SYM(uintptr_t, __DATA_START__, DATA_START);
+IMPORT_SYM(uintptr_t, __DATA_END__, DATA_END);
+#endif
+
 #if DEBUG
 static const char debug_msg[] = {
 	"***************************************************\n"
@@ -657,6 +664,11 @@ void bl2_el3_plat_prepare_exit(void)
 		/* Do nothing in default case */
 		break;
 	}
+
+#if STM32MP13
+	flush_dcache_range(BSS_START, BSS_END - BSS_START);
+	flush_dcache_range(DATA_START, DATA_END - DATA_START);
+#endif
 
 	stm32mp1_security_setup();
 
