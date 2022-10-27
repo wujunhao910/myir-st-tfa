@@ -10,7 +10,9 @@
 #include <drivers/st/bsec.h>
 #include <drivers/st/bsec2_reg.h>
 
+#include <stm32mp_svc_setup.h>
 #include <stm32mp1_smc.h>
+#include <stm32mp_svc_setup.h>
 
 #include "bsec_svc.h"
 
