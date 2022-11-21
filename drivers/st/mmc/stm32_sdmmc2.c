@@ -529,11 +529,12 @@ static int stm32_sdmmc2_prepare(int lba, uintptr_t buf, size_t size)
 	uint32_t arg_size;
 
 	assert(size != 0U);
+	assert(size <= UINT32_MAX);
 
 	if (size > MMC_BLOCK_SIZE) {
 		arg_size = MMC_BLOCK_SIZE;
 	} else {
-		arg_size = size;
+		arg_size = (uint32_t)size;
 	}
 
 	sdmmc2_params.use_dma = plat_sdmmc2_use_dma(base, buf);
