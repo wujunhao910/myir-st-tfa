@@ -256,7 +256,7 @@ static void set_gpio(uint32_t bank, uint32_t pin, uint32_t mode, uint32_t type,
 				   (uint32_t)GPIO_ALTERNATE_MASK << (pin << 2),
 				   alternate << (pin << 2));
 	} else {
-		size_t shift = (pin - GPIO_ALT_LOWER_LIMIT) << 2;
+		uint32_t shift = (pin - GPIO_ALT_LOWER_LIMIT) << 2;
 
 		mmio_clrsetbits_32(base + GPIO_AFRH_OFFSET,
 				   (uint32_t)GPIO_ALTERNATE_MASK << shift,
