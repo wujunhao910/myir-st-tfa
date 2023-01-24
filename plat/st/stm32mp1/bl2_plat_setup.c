@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2023, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -367,7 +367,7 @@ skip_console_init:
 
 	if (dt_pmic_status() > 0) {
 		initialize_pmic();
-		if (!stm32mp1_is_wakeup_from_standby() &&
+		if (!stm32mp_is_wakeup_from_standby() &&
 		    pmic_voltages_init() != 0) {
 			ERROR("PMIC voltages init failed\n");
 			panic();
@@ -429,7 +429,7 @@ static void prepare_encryption(void)
 
 	stm32_mce_init();
 
-	if (stm32mp1_is_wakeup_from_standby()) {
+	if (stm32mp_is_wakeup_from_standby()) {
 		stm32mp1_pm_get_mce_mkey_from_context(mkey);
 		stm32_mce_reload_configuration();
 	} else {

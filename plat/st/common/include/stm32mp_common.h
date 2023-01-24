@@ -79,6 +79,7 @@ static inline void stm32mp_setup_early_console(void)
 #endif
 
 bool stm32mp_skip_boot_device_after_standby(void);
+bool stm32mp_is_wakeup_from_standby(void);
 
 /*
  * Platform util functions for the GPIO driver

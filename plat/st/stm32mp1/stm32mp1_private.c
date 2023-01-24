@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2023, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -669,7 +669,7 @@ bool stm32mp1_addr_inside_backupsram(uintptr_t addr)
 		(addr < (STM32MP_BACKUP_RAM_BASE + STM32MP_BACKUP_RAM_SIZE));
 }
 
-bool stm32mp1_is_wakeup_from_standby(void)
+bool stm32mp_is_wakeup_from_standby(void)
 {
 	uint32_t rstsr = mmio_read_32(stm32mp_rcc_base() + RCC_MP_RSTSCLRR);
 #if STM32MP15
@@ -703,7 +703,7 @@ bool stm32mp_skip_boot_device_after_standby(void)
 	static int skip = -1;
 
 	if (skip == -1) {
-		if (stm32mp1_is_wakeup_from_standby()) {
+		if (stm32mp_is_wakeup_from_standby()) {
 			skip = 1;
 #if STM32MP15
 			if (stm32_pm_get_optee_ep() == 0U) {
