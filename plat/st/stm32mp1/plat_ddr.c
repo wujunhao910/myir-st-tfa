@@ -14,8 +14,8 @@
 static int pmic_ddr_power_init(enum ddr_type ddr_type)
 {
 	int status;
-	uint16_t buck3_min_mv;
-	struct rdev *buck2, *buck3, *vref;
+	uint16_t buck3_min_mv __unused;
+	struct rdev *buck2, *buck3 __unused, *vref;
 	struct rdev *ldo3 __unused;
 
 	buck2 = regulator_get_by_name("buck2");
@@ -69,10 +69,11 @@ static int pmic_ddr_power_init(enum ddr_type ddr_type)
 
 	case STM32MP_LPDDR2:
 	case STM32MP_LPDDR3:
+#if STM32MP15
 		/*
-		 * Set LDO3 to 1.8V
-		 * Set LDO3 to bypass mode if BUCK3 = 1.8V
-		 * Set LDO3 to normal mode if BUCK3 != 1.8V
+		 * Set LDO3 to 1.8V according  BUCK3 voltage
+		 * => bypass mode if BUCK3 = 1.8V
+		 * => normal mode if BUCK3 != 1.8V
 		 */
 		buck3 = regulator_get_by_name("buck3");
 		if (buck3 == NULL) {
@@ -81,7 +82,6 @@ static int pmic_ddr_power_init(enum ddr_type ddr_type)
 
 		regulator_get_range(buck3, &buck3_min_mv, NULL);
 
-#if STM32MP15
 		if (buck3_min_mv != 1800) {
 			status = regulator_set_min_voltage(ldo3);
 			if (status != 0) {
