@@ -331,6 +331,8 @@ BL2_SOURCES		+=	drivers/st/ddr/stm32mp_ddr_test.c			\
 				drivers/st/ddr/stm32mp1_ddr.c				\
 				drivers/st/ddr/stm32mp1_ram.c
 
+BL2_SOURCES		+=	plat/st/stm32mp1/plat_ddr.c
+
 BL2_SOURCES		+=	plat/st/stm32mp1/plat_image_load.c
 
 BL2_SOURCES		+=	plat/st/stm32mp1/stm32mp1_critic_power.c

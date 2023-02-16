@@ -8,7 +8,6 @@
 #include <drivers/delay_timer.h>
 #include <drivers/st/stm32mp_ddr.h>
 #include <drivers/st/stm32mp_ddrctrl_regs.h>
-#include <drivers/st/stm32mp_pmic.h>
 #include <lib/mmio.h>
 
 #include <platform_def.h>
@@ -286,13 +285,4 @@ void stm32mp_ddr_wait_refresh_update_done_ack(struct stm32mp_ddrctl *ctl)
 	} while ((rfshctl3 & DDRCTRL_RFSHCTL3_REFRESH_UPDATE_LEVEL) != refresh_update_level);
 
 	VERBOSE("[0x%lx] rfshctl3 = 0x%x\n", (uintptr_t)&ctl->rfshctl3, rfshctl3);
-}
-
-int stm32mp_board_ddr_power_init(enum ddr_type ddr_type)
-{
-	if (dt_pmic_status() > 0) {
-		return pmic_ddr_power_init(ddr_type);
-	}
-
-	return 0;
 }
