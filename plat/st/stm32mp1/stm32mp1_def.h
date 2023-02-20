@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2023, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -74,6 +74,7 @@
 #define STM32MP1_REV_Z		U(0x1001)
 #endif
 #if STM32MP15
+#define STM32MP1_REV_Y		U(0x2003)
 #define STM32MP1_REV_Z		U(0x2001)
 #endif
 
