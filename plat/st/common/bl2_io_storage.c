@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2022, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2023, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -224,7 +224,7 @@ static void print_boot_device(boot_api_context_t *boot_context)
 static void boot_mmc(enum mmc_device_type mmc_dev_type,
 		     uint16_t boot_interface_instance)
 {
-	int io_result __unused;
+	int io_result __maybe_unused;
 	struct stm32_sdmmc2_params params;
 
 	zeromem(&params, sizeof(struct stm32_sdmmc2_params));
@@ -296,7 +296,7 @@ static void boot_mmc(enum mmc_device_type mmc_dev_type,
 #if STM32MP_SPI_NOR
 static void boot_spi_nor(boot_api_context_t *boot_context)
 {
-	int io_result __unused;
+	int io_result __maybe_unused;
 
 	io_result = stm32_qspi_init();
 	assert(io_result == 0);
@@ -315,7 +315,7 @@ static void boot_spi_nor(boot_api_context_t *boot_context)
 #if STM32MP_RAW_NAND
 static void boot_fmc2_nand(boot_api_context_t *boot_context)
 {
-	int io_result __unused;
+	int io_result __maybe_unused;
 
 	io_result = stm32_fmc2_init();
 	assert(io_result == 0);
@@ -336,7 +336,7 @@ static void boot_fmc2_nand(boot_api_context_t *boot_context)
 #if STM32MP_SPI_NAND
 static void boot_spi_nand(boot_api_context_t *boot_context)
 {
-	int io_result __unused;
+	int io_result __maybe_unused;
 
 	io_result = stm32_qspi_init();
 	assert(io_result == 0);
@@ -357,7 +357,7 @@ static void boot_spi_nand(boot_api_context_t *boot_context)
 #if STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER
 static void mmap_io_setup(void)
 {
-	int io_result __unused;
+	int io_result __maybe_unused;
 
 	io_result = register_io_dev_memmap(&memmap_dev_con);
 	assert(io_result == 0);
@@ -370,7 +370,7 @@ static void mmap_io_setup(void)
 #if STM32MP_UART_PROGRAMMER
 static void stm32cubeprogrammer_uart(void)
 {
-	int ret __unused;
+	int ret __maybe_unused;
 	boot_api_context_t *boot_context =
 		(boot_api_context_t *)stm32mp_get_boot_ctx_address();
 	uintptr_t uart_base;
@@ -384,7 +384,7 @@ static void stm32cubeprogrammer_uart(void)
 #if STM32MP_USB_PROGRAMMER
 static void stm32cubeprogrammer_usb(void)
 {
-	int ret __unused;
+	int ret __maybe_unused;
 	struct usb_handle *pdev;
 
 	/* Init USB on platform */
@@ -396,10 +396,9 @@ static void stm32cubeprogrammer_usb(void)
 #endif
 #endif /* STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER */
 
-
 void stm32mp_io_setup(void)
 {
-	int io_result __unused;
+	int io_result __maybe_unused;
 	boot_api_context_t *boot_context =
 		(boot_api_context_t *)stm32mp_get_boot_ctx_address();
 
@@ -479,7 +478,7 @@ void stm32mp_io_setup(void)
 
 int bl2_plat_handle_pre_image_load(unsigned int image_id)
 {
-	static bool gpt_init_done __unused;
+	static bool gpt_init_done __maybe_unused;
 	uint16_t boot_itf = stm32mp_get_boot_itf_selected();
 
 	if (stm32mp_skip_boot_device_after_standby()) {
@@ -526,6 +525,7 @@ int bl2_plat_handle_pre_image_load(unsigned int image_id)
 			gpt_init_done = true;
 		} else {
 			bl_mem_params_node_t *bl_mem_params = get_bl_mem_params_node(image_id);
+
 			assert(bl_mem_params != NULL);
 
 			mmc_block_dev_spec.buffer.offset = bl_mem_params->image_info.image_base;
@@ -712,8 +712,9 @@ void plat_fwu_set_images_source(const struct fwu_metadata *metadata)
 {
 	unsigned int i;
 	uint32_t boot_idx;
-	const partition_entry_t *entry __unused;
-	const uuid_t *img_type_uuid, *img_uuid;
+	const partition_entry_t *entry __maybe_unused;
+	const uuid_t *img_type_uuid;
+	const uuid_t *img_uuid __maybe_unused;
 	io_block_spec_t *image_spec;
 
 	boot_idx = plat_fwu_get_boot_idx();
@@ -768,8 +769,8 @@ static int plat_set_image_source(unsigned int image_id,
 				 uintptr_t *image_spec)
 {
 	struct plat_io_policy *policy;
-	io_block_spec_t *spec;
-	const partition_entry_t *entry __unused;
+	io_block_spec_t *spec __maybe_unused;
+	const partition_entry_t *entry __maybe_unused;
 
 	policy = &policies[image_id];
 	spec = (io_block_spec_t *)policy->image_spec;
