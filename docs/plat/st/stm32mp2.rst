@@ -4,6 +4,8 @@ STM32MP2
 STM32MP2 is a microprocessor designed by STMicroelectronics
 based on Arm Cortex-A35.
 
+More information can be found on `STM32MP2 Series`_ page.
+
 For TF-A common configuration of STM32 MPUs, please check
 :ref:`STM32 MPUs` page or `Github STM32 MPUs`_.
 
@@ -23,6 +25,8 @@ Each line comes with a security option (cryptography & secure boot) and a Cortex
 - C      Secure Boot + HW Crypto + Cortex-A35 @ 1GHz
 - D      Basic + Cortex-A35 @ 1.5GHz
 - F      Secure Boot + HW Crypto + Cortex-A35 @ 1.5GHz
+
+The `STM32MP2 part number codification`_ page gives more information about part numbers.
 
 Memory mapping
 --------------
@@ -195,6 +199,8 @@ __________________
         --soc-fw build/stm32mp2/release/bl31.bin \
         build/stm32mp2/release/fip.bin
 
+.. _STM32MP2 Series: https://www.st.com/en/microcontrollers-microprocessors/stm32mp2-series.html
+.. _STM32MP2 part number codification: https://wiki.st.com/stm32mpu/wiki/STM32MP25_microprocessor#Part_number_codification
 .. _Github STM32 MPUs: https://github.com/STMicroelectronics/arm-trusted-firmware/tree/HEAD/docs/plat/st/stm32mpus.rst
 .. _STMicroelectronics DDR PHY github: https://github.com/STMicroelectronics/stm32-ddr-phy-binary
 
