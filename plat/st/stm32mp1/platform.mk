@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2015-2022, ARM Limited and Contributors. All rights reserved.
+# Copyright (c) 2015-2023, ARM Limited and Contributors. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -55,6 +55,9 @@ endif
 # STM32 image header version v2.0
 STM32_HEADER_VERSION_MAJOR:=	2
 STM32_HEADER_VERSION_MINOR:=	0
+
+# OP-TEE cannot be in SYSRAM on STM32MP13
+override STM32MP1_OPTEE_IN_SYSRAM :=	0
 endif
 
 ifeq ($(STM32MP15),1)
@@ -66,6 +69,8 @@ STM32MP_DDR_32BIT_INTERFACE:=	1
 STM32_HEADER_VERSION_MAJOR:=	1
 STM32_HEADER_VERSION_MINOR:=	0
 STM32MP_CRYPTO_ROM_LIB :=	1
+
+STM32MP1_OPTEE_IN_SYSRAM ?=	0
 
 # Decryption support
 ifneq ($(DECRYPTION_SUPPORT),none)
@@ -177,6 +182,7 @@ $(eval $(call assert_booleans,\
 		STM32MP_USE_EXTERNAL_HEAP \
 		STM32MP13 \
 		STM32MP15 \
+		STM32MP1_OPTEE_IN_SYSRAM \
 )))
 
 $(eval $(call assert_numerics,\
@@ -207,6 +213,7 @@ $(eval $(call add_defines,\
 		STM32MP_USE_EXTERNAL_HEAP \
 		STM32MP13 \
 		STM32MP15 \
+		STM32MP1_OPTEE_IN_SYSRAM \
 )))
 
 # Include paths and source files

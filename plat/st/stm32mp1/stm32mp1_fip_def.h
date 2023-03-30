@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022, STMicroelectronics - All Rights Reserved
+ * Copyright (C) 2021-2023, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -116,7 +116,7 @@
 #define STM32MP_DTB_BASE		STM32MP_BL32_DTB_BASE
 #endif
 
-#ifdef AARCH32_SP_OPTEE
+#if defined(AARCH32_SP_OPTEE) && STM32MP1_OPTEE_IN_SYSRAM
 #define STM32MP_OPTEE_BASE		STM32MP_SEC_SYSRAM_BASE
 
 #define STM32MP_OPTEE_SIZE		(STM32MP_BL2_DTB_BASE -  \

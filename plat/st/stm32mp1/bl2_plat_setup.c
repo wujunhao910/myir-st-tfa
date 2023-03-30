@@ -42,7 +42,7 @@
 
 #define PLL1_NOMINAL_FREQ_IN_KHZ	650000U /* 650MHz */
 
-#if STM32MP13
+#if !STM32MP1_OPTEE_IN_SYSRAM
 IMPORT_SYM(uintptr_t, __BSS_START__, BSS_START);
 IMPORT_SYM(uintptr_t, __BSS_END__, BSS_END);
 IMPORT_SYM(uintptr_t, __DATA_START__, DATA_START);
@@ -660,7 +660,7 @@ void bl2_el3_plat_prepare_exit(void)
 	}
 #endif /* STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER */
 
-#if STM32MP13
+#if !STM32MP1_OPTEE_IN_SYSRAM
 	flush_dcache_range(BSS_START, BSS_END - BSS_START);
 	flush_dcache_range(DATA_START, DATA_END - DATA_START);
 #endif
