@@ -175,7 +175,7 @@
 	};
 };
 
-&iwdg2 {
+&iwdg1 {
 	timeout-sec = <32>;
 	status = "okay";
 };
