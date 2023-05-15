@@ -1163,7 +1163,7 @@ static int stm32_clk_source_configure(struct stm32_clk_priv *priv)
 	 * => deactivate CKPER only after switching clock
 	 */
 	if (ckper_disabled) {
-		ret = stm32_clk_configure_mux(priv, CLK_CKPER_DISABLED & CMD_MASK);
+		ret = stm32_clk_configure_mux(priv, CLK_CKPER_DISABLED);
 		if (ret != 0) {
 			return ret;
 		}
