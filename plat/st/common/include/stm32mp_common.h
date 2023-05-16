@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022, STMicroelectronics - All Rights Reserved
+ * Copyright (C) 2018-2023, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -50,6 +50,7 @@ int stm32_get_otp_index(const char *otp_name, uint32_t *otp_idx,
 			uint32_t *otp_len);
 int stm32_get_otp_value(const char *otp_name, uint32_t *otp_val);
 int stm32_get_otp_value_from_idx(const uint32_t otp_idx, uint32_t *otp_val);
+int stm32_lock_enc_key_otp(void);
 
 /* Get IWDG platform instance ID from peripheral IO memory base address */
 uint32_t stm32_iwdg_get_instance(uintptr_t base);
