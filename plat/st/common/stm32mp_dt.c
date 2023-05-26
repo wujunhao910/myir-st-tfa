@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2022, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2017-2023, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -296,6 +296,32 @@ struct rdev *dt_get_cpu_regulator(void)
 	}
 
 	return regulator_get_by_supply_name(fdt, node, "cpu");
+}
+
+/*******************************************************************************
+ * This function retrieves SYSRAM supply regulator from DT.
+ * Returns an rdev taken from supply node, NULL otherwise.
+ ******************************************************************************/
+struct rdev *dt_get_sysram_regulator(void)
+{
+	int node;
+
+	fdt_for_each_compatible_node(fdt, node, DT_MMIO_SRAM) {
+		int len;
+		const fdt32_t *cuint = fdt_getprop(fdt, node, "reg", &len);
+
+		if (cuint != NULL) {
+			if (fdt32_to_cpu(*cuint) == STM32MP_SYSRAM_BASE) {
+				break;
+			}
+		}
+	}
+
+	if (node < 0) {
+		return NULL;
+	}
+
+	return regulator_get_by_supply_name(fdt, node, "vddcore");
 }
 
 /*******************************************************************************
