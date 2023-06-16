@@ -10,6 +10,7 @@
 #include <arch_helpers.h>
 #include <bl31/interrupt_mgmt.h>
 #include <common/debug.h>
+#include <common/fdt_wrappers.h>
 #include <drivers/arm/gic_common.h>
 #include <drivers/arm/gicv2.h>
 #include <drivers/clk.h>
@@ -138,7 +139,7 @@ const unsigned int stm32mp_pm_idle_states[] = {
 #define PM_IDLE_STATES_SIZE ARRAY_SIZE(stm32mp_pm_idle_states)
 
 /* The supported low power mode on the board, including STANDBY */
-static unsigned int stm32mp_supported_pwr_states[PM_IDLE_STATES_SIZE + 1U];
+unsigned int stm32mp_supported_pwr_states[PM_IDLE_STATES_SIZE + 1U];
 
 extern void stm32_stop2_entrypoint(void);
 
@@ -828,7 +829,7 @@ static int stm32_parse_domain_idle_state(void)
 }
 
 /*******************************************************************************
- * Initialize STM32MP2 for PM support: RCC, PWR
+ * Export the platform specific power ops.
  ******************************************************************************/
 int plat_setup_psci_ops(uintptr_t sec_entrypoint,
 			const plat_psci_ops_t **psci_ops)
