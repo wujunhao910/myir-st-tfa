@@ -240,13 +240,13 @@ func console_stm32_core_flush
 #endif /* ENABLE_ASSERTIONS */
 	/* Skip flush if UART is not enabled */
 	ldr	r1, [r0, #USART_CR1]
-	ands	r1, r1, #USART_CR1_UE
+	tst	r1, #USART_CR1_UE
 	beq	1f
 	/* Check Transmit Data Register Empty */
 	mov	r2, #USART_TIMEOUT
 txe_loop_3:
 	subs	r2, r2, #1
-	beq	plat_panic_handler
+	beq	1f
 	ldr	r1, [r0, #USART_ISR]
 	tst	r1, #USART_ISR_TXE
 	beq	txe_loop_3
