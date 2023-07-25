@@ -362,6 +362,9 @@ static int stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 		panic();
 	}
 
+	/* Disable DDRSHR to avoid STANDBY/STOP exit issue */
+	mmio_clrbits_32(rcc_base + RCC_DDRITFCFGR, RCC_DDRITFCFGR_DDRSHR);
+
 	/* Perform the PWR configuration for the requested mode */
 	switch (stateid) {
 	case PWRSTATE_STOP1:
