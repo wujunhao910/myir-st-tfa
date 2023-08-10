@@ -26,6 +26,7 @@
 #include <plat/common/platform.h>
 
 #include <platform_def.h>
+#include <stm32mp2_context.h>
 
 #define CA35SS_SYSCFG_VBAR_CR	0x2084U
 
