@@ -29,6 +29,9 @@
 
 #define CA35SS_SYSCFG_VBAR_CR	0x2084U
 
+#define RAMCFG_RETRAMCR		0x180U
+#define SRAMHWERDIS		BIT(12)
+
 /* GIC interrupt number */
 #define RCC_WAKEUP_IRQn		254
 
