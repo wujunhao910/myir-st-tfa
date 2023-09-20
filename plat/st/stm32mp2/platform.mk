@@ -184,8 +184,13 @@ PLAT_BL_COMMON_SOURCES	+=	drivers/st/uart/${ARCH}/stm32_console.S
 
 PLAT_BL_COMMON_SOURCES	+=	lib/cpus/${ARCH}/cortex_a35.S
 
-PLAT_BL_COMMON_SOURCES	+=	drivers/st/bsec/bsec3.c					\
-				drivers/st/iwdg/stm32_iwdg.c				\
+ifeq ($(STM32MP_M33_TDCID),0)
+PLAT_BL_COMMON_SOURCES	+=	drivers/st/bsec/bsec3.c
+else
+PLAT_BL_COMMON_SOURCES	+=	plat/st/stm32mp2/stm32mp2_otp.c
+endif
+
+PLAT_BL_COMMON_SOURCES	+=	drivers/st/iwdg/stm32_iwdg.c				\
 				drivers/st/reset/stm32mp2_reset.c			\
 				plat/st/stm32mp2/${ARCH}/stm32mp2_helper.S		\
 				plat/st/stm32mp2/stm32mp2_context.c			\

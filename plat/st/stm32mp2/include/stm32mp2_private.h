@@ -58,6 +58,7 @@ size_t stm32_risaf_get_memory_size(int instance);
 uintptr_t stm32_ddrdbg_get_base(void);
 
 /* Wrappers for OTP / BSEC functions */
+#if !STM32MP_M33_TDCID
 static inline uint32_t stm32_otp_probe(void)
 {
 	return bsec_probe();
@@ -92,5 +93,14 @@ static inline bool stm32_otp_is_closed_device(void)
 {
 	return bsec_mode_is_closed_device();
 }
+#else /* STM32MP_M33_TDCID */
+uint32_t stm32_otp_probe(void);
+uint32_t stm32_otp_read(uint32_t *val, uint32_t otp);
+uint32_t stm32_otp_shadow_read(uint32_t *val, uint32_t otp);
+uint32_t stm32_otp_write(uint32_t val, uint32_t otp);
+uint32_t stm32_otp_set_sr_lock(uint32_t otp);
+uint32_t stm32_otp_read_sw_lock(uint32_t otp, bool *value);
+bool stm32_otp_is_closed_device(void);
+#endif /* STM32MP_M33_TDCID */
 
 #endif /* STM32MP2_PRIVATE_H */
