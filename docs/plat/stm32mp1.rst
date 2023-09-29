@@ -254,6 +254,7 @@ __________________
         --nt-fw <u-boot_directory>/u-boot-nodtb.bin \
         --hw-config <u-boot_directory>/u-boot.dtb \
         --fw-config build/stm32mp1/debug/fdts/fw-config.dtb \
+        --trusted-key-cert build/stm32mp1/cert_images/trusted-key-cert.key-crt \
         --tos-fw-cert build/stm32mp1/cert_images/tee-header_v2.bin.crt \
         --tos-fw-key-cert build/stm32mp1/cert_images/tee-header_v2.bin.key-crt \
         --nt-fw-cert build/stm32mp1/cert_images/u-boot.bin.crt \
