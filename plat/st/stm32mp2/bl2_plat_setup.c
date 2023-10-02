@@ -20,6 +20,7 @@
 #include <drivers/st/regulator_fixed.h>
 #include <drivers/st/stm32_console.h>
 #include <drivers/st/stm32_iwdg.h>
+#include <drivers/st/stm32_rifsc.h>
 #include <drivers/st/stm32_rng.h>
 #include <drivers/st/stm32mp_pmic2.h>
 #include <drivers/st/stm32mp_reset.h>
@@ -273,6 +274,12 @@ skip_console_init:
 	if (stm32mp_check_closed_device() == STM32MP_CHIP_SEC_CLOSED) {
 		/* Closed chip mandates authentication */
 		ERROR("Secure chip: TRUSTED_BOARD_BOOT must be enabled\n");
+		panic();
+	}
+#endif
+
+#if !STM32MP_M33_TDCID
+	if (stm32_rifsc_semaphore_init() != 0) {
 		panic();
 	}
 #endif
