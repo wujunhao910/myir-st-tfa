@@ -48,6 +48,38 @@ IMPORT_SYM(uintptr_t, __BSS_END__, BSS_END);
 IMPORT_SYM(uintptr_t, __DATA_START__, DATA_START);
 IMPORT_SYM(uintptr_t, __DATA_END__, DATA_END);
 
+#define IAC_EXCEPT_LSB_BIT(x) ((x) * 32U)
+#define IAC_EXCEPT_MSB_BIT(x) (IAC_EXCEPT_LSB_BIT(x) + 31U)
+
+static void iac_dump(void)
+{
+#if DEBUG
+	unsigned int i;
+	unsigned int bit;
+
+	for (i = 0U; i < IAC_NB; i++) {
+		uint32_t isr = mmio_read_32(IAC_BASE + IAC_ISR(i));
+		uint32_t ier = mmio_read_32(IAC_BASE + IAC_IER(i));
+
+		isr &= ier;
+		if (isr == 0U) {
+			continue;
+		}
+
+		WARN("IAC exceptions pending [%u:%u] = %x\n",
+		     IAC_EXCEPT_MSB_BIT(i), IAC_EXCEPT_LSB_BIT(i), isr);
+		bit = 0U;
+		while ((isr != 0U) && (bit < 32U)) {
+			if ((isr & BIT(0)) != 0U) {
+				WARN(" - %u\n", IAC_EXCEPT_LSB_BIT(i) + bit);
+			}
+			isr >>= 1U;
+			bit++;
+		}
+	}
+#endif
+}
+
 static void print_reset_reason(void)
 {
 	uint32_t rstsr = mmio_read_32(stm32mp_rcc_base() + RCC_C1BOOTRSTSCLRR);
@@ -264,6 +296,8 @@ void bl2_el3_plat_arch_setup(void)
 	if (stm32mp_uart_console_setup() != 0) {
 		goto skip_console_init;
 	}
+
+	iac_dump();
 
 	stm32mp_print_cpuinfo();
 
