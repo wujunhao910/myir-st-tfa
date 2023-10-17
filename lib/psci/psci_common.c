@@ -179,9 +179,10 @@ static bool psci_is_last_cpu_to_idle_at_pwrlvl(unsigned int end_pwrlvl)
 	}
 
 	my_idx = plat_my_core_pos();
+	parent_idx = my_idx;
 
 	for (lvl = PSCI_CPU_PWR_LVL; lvl <= end_pwrlvl; lvl++) {
-		parent_idx = psci_cpu_pd_nodes[my_idx].parent_node;
+		parent_idx = psci_cpu_pd_nodes[parent_idx].parent_node;
 	}
 
 	cpu_start_idx = psci_non_cpu_pd_nodes[parent_idx].cpu_start_idx;
