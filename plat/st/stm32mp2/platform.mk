@@ -280,9 +280,6 @@ BL31_SOURCES		+=	${GICV2_SOURCES}					\
 				plat/common/plat_gicv2.c				\
 				plat/st/common/stm32mp_gic.c
 
-# Generic PSCI
-BL31_SOURCES		+=	plat/common/plat_psci_common.c
-
 BL31_SOURCES		+=	plat/st/common/stm32mp_svc_setup.c			\
 				plat/st/stm32mp2/services/stgen_svc.c			\
 				plat/st/stm32mp2/services/stm32mp2_svc_setup.c
