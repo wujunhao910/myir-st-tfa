@@ -499,3 +499,9 @@ void ddr_restore_sr_mode(void)
 {
 	ddr_set_sr_mode(saved_ddr_sr_mode);
 }
+
+void ddr_sub_system_clk_init(void)
+{
+	mmio_write_32(stm32mp_rcc_base() + RCC_DDRCPCFGR,
+		      RCC_DDRCPCFGR_DDRCPEN | RCC_DDRCPCFGR_DDRCPLPEN);
+}
