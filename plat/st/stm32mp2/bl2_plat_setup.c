@@ -26,6 +26,7 @@
 #include <drivers/st/stm32mp_reset.h>
 #include <drivers/st/stm32mp_rifsc_regs.h>
 #include <drivers/st/stm32mp_risab_regs.h>
+#include <drivers/st/stm32mp2_ddr_helpers.h>
 #include <drivers/st/stm32mp2_ram.h>
 #include <drivers/st/stm32mp2_risaf.h>
 #include <lib/fconf/fconf.h>
@@ -235,6 +236,12 @@ void bl2_el3_plat_arch_setup(void)
 	}
 
 	reset_backup_domain();
+
+	/*
+	 * Initialize DDR sub-system clock. This needs to be done before enabling DDR PLL (PLL2),
+	 * and so before stm32mp2_clk_init().
+	 */
+	ddr_sub_system_clk_init();
 
 	if (stm32mp2_clk_init() < 0) {
 		panic();
