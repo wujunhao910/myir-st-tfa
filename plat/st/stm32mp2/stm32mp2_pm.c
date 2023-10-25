@@ -129,7 +129,7 @@ u_register_t saved_scr_el3;
  *  enable us to use binary search during power state validation.
  *  The table must be terminated by a NULL entry.
  */
-const unsigned int stm32mp_pm_idle_states[] = {
+static const unsigned int stm32mp_pm_idle_states[] = {
 	PWRSTATE_RUN,
 	PWRSTATE_STOP1,
 	PWRSTATE_LP_STOP1,
@@ -143,7 +143,7 @@ const unsigned int stm32mp_pm_idle_states[] = {
 #define PM_IDLE_STATES_SIZE ARRAY_SIZE(stm32mp_pm_idle_states)
 
 /* The supported low power mode on the board, including STANDBY */
-unsigned int stm32mp_supported_pwr_states[PM_IDLE_STATES_SIZE + 1U];
+static unsigned int stm32mp_supported_pwr_states[PM_IDLE_STATES_SIZE + 1U];
 
 extern void stm32_stop2_entrypoint(void);
 
