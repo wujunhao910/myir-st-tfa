@@ -34,6 +34,7 @@
 #define PLATFORM_MAX_CPUS_PER_CLUSTER	U(2)
 
 #define PLAT_MAX_PWR_LVL		U(4)
+#define PLAT_MIN_SUSPEND_PWR_LVL	U(2)
 #define PLAT_NUM_PWR_DOMAINS		U(6)
 
 /* Local power state for power domains in Run state. */
