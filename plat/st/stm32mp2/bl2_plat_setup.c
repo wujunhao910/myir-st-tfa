@@ -464,6 +464,19 @@ int bl2_plat_handle_post_image_load(unsigned int image_id)
 
 	assert(bl_mem_params != NULL);
 
+#if STM32MP_SDMMC || STM32MP_EMMC
+	/*
+	 * Invalidate remaining data read from MMC but not flushed by load_image_flush().
+	 * We take the worst case which is 2 MMC blocks.
+	 */
+	if ((image_id != FW_CONFIG_ID) &&
+	    ((bl_mem_params->image_info.h.attr & IMAGE_ATTRIB_SKIP_LOADING) == 0U)) {
+		inv_dcache_range(bl_mem_params->image_info.image_base +
+				 bl_mem_params->image_info.image_size,
+				 2U * MMC_BLOCK_SIZE);
+	}
+#endif /* STM32MP_SDMMC || STM32MP_EMMC */
+
 	switch (image_id) {
 	case FW_CONFIG_ID:
 		if ((stm32mp_check_closed_device() == STM32MP_CHIP_SEC_CLOSED) ||
@@ -585,19 +598,6 @@ int bl2_plat_handle_post_image_load(unsigned int image_id)
 		/* Do nothing in default case */
 		break;
 	}
-
-#if STM32MP_SDMMC || STM32MP_EMMC
-	/*
-	 * Invalidate remaining data read from MMC but not flushed by load_image_flush().
-	 * We take the worst case which is 2 MMC blocks.
-	 */
-	if ((image_id != FW_CONFIG_ID) &&
-	    ((bl_mem_params->image_info.h.attr & IMAGE_ATTRIB_SKIP_LOADING) == 0U)) {
-		inv_dcache_range(bl_mem_params->image_info.image_base +
-				 bl_mem_params->image_info.image_size,
-				 2U * MMC_BLOCK_SIZE);
-	}
-#endif /* STM32MP_SDMMC || STM32MP_EMMC */
 
 	return err;
 }
