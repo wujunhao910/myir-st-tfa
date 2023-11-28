@@ -122,7 +122,7 @@ uintptr_t stm32_get_gpio_bank_base(unsigned int bank)
 		return GPIOZ_BASE;
 	}
 
-	assert(GPIO_BANK_A == 0 && bank <= GPIO_BANK_K);
+	assert(bank <= GPIO_BANK_K);
 
 	return GPIOA_BASE + (bank * GPIO_BANK_OFFSET);
 }
@@ -133,7 +133,7 @@ uint32_t stm32_get_gpio_bank_offset(unsigned int bank)
 		return 0;
 	}
 
-	assert(GPIO_BANK_A == 0 && bank <= GPIO_BANK_K);
+	assert(bank <= GPIO_BANK_K);
 
 	return bank * GPIO_BANK_OFFSET;
 }
@@ -144,7 +144,7 @@ unsigned long stm32_get_gpio_bank_clock(unsigned int bank)
 		return CK_BUS_GPIOZ;
 	}
 
-	assert(GPIO_BANK_A == 0 && bank <= GPIO_BANK_K);
+	assert(bank <= GPIO_BANK_K);
 
 	return CK_BUS_GPIOA + (bank - GPIO_BANK_A);
 }
