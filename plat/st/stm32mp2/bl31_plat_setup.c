@@ -61,6 +61,8 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
 		panic();
 	}
 
+	stm32_tamp_nvram_init();
+
 	(void)stm32mp_uart_console_setup();
 
 	assert(arg0 != 0UL);
@@ -131,6 +133,20 @@ void bl31_plat_arch_setup(void)
 
 void bl31_platform_setup(void)
 {
+}
+
+void bl31_plat_runtime_setup(void)
+{
+	/* We reinit the nvram driver Optee should have update the register access configuration
+	 * based on the device tree
+	 */
+	int ret = stm32_tamp_nvram_update_rights();
+
+	if (ret != 0) {
+		ERROR("Failed to update TAMP backup registers rights\n");
+		panic();
+	}
+	console_switch_state(CONSOLE_FLAG_RUNTIME);
 }
 
 entry_point_info_t *bl31_plat_get_next_image_ep_info(unsigned int type)

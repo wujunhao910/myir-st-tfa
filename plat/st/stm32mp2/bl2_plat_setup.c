@@ -285,6 +285,8 @@ void bl2_el3_plat_arch_setup(void)
 		panic();
 	}
 
+	stm32_tamp_nvram_init();
+
 	if (stm32_iwdg_init() < 0) {
 		panic();
 	}
