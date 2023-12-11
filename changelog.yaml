@@ -1047,6 +1047,9 @@ subsections:
           - title: GPIO
             scope: st-gpio
 
+          - title: NVMEM
+            scope: st-nvmem
+
           - title: Regulator
             scope: st-regulator
 

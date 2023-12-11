@@ -557,6 +557,9 @@ static inline uintptr_t tamp_bkpr(uint32_t idx)
 #define PLAT_NB_GPIO_REGUS		U(0)
 /* Number of low power modes defined in the device tree */
 #define PLAT_NB_SUSPEND_MODES		7
+/* TAMP BACKUP REGISTER */
+#define PLAT_NB_NVMEM_DEVS		U(1)
+#define MAX_TAMP_BACKUP_REGS_ZONES	U(7)
 
 /*******************************************************************************
  * Device Tree defines
