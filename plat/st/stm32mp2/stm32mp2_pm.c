@@ -323,11 +323,9 @@ static bool stm32_freeze_other_core(unsigned int core_id)
 	return result;
 }
 
-static int stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
+static int stm32_pwr_domain_validate_suspend(const psci_power_state_t *target_state)
 {
 	uintptr_t pwr_base = stm32mp_pwr_base();
-	uintptr_t rcc_base = stm32mp_rcc_base();
-	bool standby = false;
 	uint32_t stateid = stm32_get_stateid(target_state->pwr_domain_state);
 	u_register_t mpidr = read_mpidr();
 	unsigned int core_id = MPIDR_AFFLVL0_VAL(mpidr);
@@ -345,6 +343,21 @@ static int stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 
 	if (!stm32_freeze_other_core(core_id)) {
 		return PSCI_E_DENIED;
+	}
+
+	return PSCI_E_SUCCESS;
+}
+
+static void stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
+{
+	uintptr_t pwr_base = stm32mp_pwr_base();
+	uintptr_t rcc_base = stm32mp_rcc_base();
+	bool standby = false;
+	uint32_t stateid = stm32_get_stateid(target_state->pwr_domain_state);
+
+	/* If retention only at D1 level return as nothing is to be done */
+	if (stateid == PWRSTATE_RUN) {
+		return;
 	}
 
 	/* Request STOP for both cores */
@@ -441,8 +454,6 @@ static int stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 	/* Enable the Non-secure interrupt to wake up the CPU with WFI for pending interrupt */
 	saved_scr_el3 = read_scr_el3();
 	write_scr_el3(saved_scr_el3 | SCR_IRQ_BIT | SCR_FIQ_BIT);
-
-	return PSCI_E_SUCCESS;
 }
 
 /*******************************************************************************
@@ -797,6 +808,7 @@ static const plat_psci_ops_t stm32_psci_ops = {
 	.cpu_standby = stm32_cpu_standby,
 	.pwr_domain_on = stm32_pwr_domain_on,
 	.pwr_domain_off = stm32_pwr_domain_off,
+	.pwr_domain_validate_suspend = stm32_pwr_domain_validate_suspend,
 	.pwr_domain_suspend = stm32_pwr_domain_suspend,
 	.pwr_domain_on_finish = stm32_pwr_domain_on_finish,
 	.pwr_domain_suspend_finish = stm32_pwr_domain_suspend_finish,
