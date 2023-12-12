@@ -449,8 +449,8 @@ void psci_get_target_local_pwr_states(unsigned int end_pwrlvl,
  * enter. This function will be called after coordination of requested power
  * states has been done for each power level.
  *****************************************************************************/
-void psci_set_target_local_pwr_states(unsigned int end_pwrlvl,
-				      const psci_power_state_t *target_state)
+static void psci_set_target_local_pwr_states(unsigned int end_pwrlvl,
+					const psci_power_state_t *target_state)
 {
 	unsigned int parent_idx, lvl;
 	const plat_local_state_t *pd_state = target_state->pwr_domain_state;

@@ -385,8 +385,6 @@ int psci_set_suspend_mode(unsigned int mode);
 #endif
 void __dead2 psci_power_down_wfi(void);
 void psci_arch_setup(void);
-void psci_set_target_local_pwr_states(unsigned int end_pwrlvl,
-				      const psci_power_state_t *target_state);
 
 #endif /*__ASSEMBLER__*/
 
