@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022, STMicroelectronics - All Rights Reserved
+ * Copyright (C) 2021-2023, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -95,60 +95,61 @@ int ddrphy_phyinit_calcmb(void)
 
 #if STM32MP_DDR3_TYPE
 		if (userinputbasic.dimmtype == NODIMM) {
-			ret = ddrphy_phyinit_softsetmb(myps,"dramtype",0x1);
+			ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_DRAMTYPE, 0x1);
 			if (ret != 0) {
 				return ret;
 			}
 		}
 #elif STM32MP_DDR4_TYPE
 		if (userinputbasic.dimmtype == NODIMM) {
-			ret = ddrphy_phyinit_softsetmb(myps,"dramtype",0x2);
+			ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_DRAMTYPE, 0x2);
 			if (ret != 0) {
 				return ret;
 			}
 		}
 #endif /* STM32MP_DDR4_TYPE */
 
-		ret = ddrphy_phyinit_softsetmb(myps, "pstate", myps);
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_PSTATE, myps);
 		if (ret != 0) {
 			return ret;
 		}
 
-		ret = ddrphy_phyinit_softsetmb(myps, "dramfreq",
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_DRAMFREQ,
 					       userinputbasic.frequency[myps] * 2);
 		if (ret != 0) {
 			return ret;
 		}
 
-		ret = ddrphy_phyinit_softsetmb(myps, "pllbypassen", userinputbasic.pllbypass[myps]);
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_PLLBYPASSEN,
+					       userinputbasic.pllbypass[myps]);
 		if (ret != 0) {
 			return ret;
 		}
 
 		if (userinputbasic.dfifreqratio[myps] == 1) {
-			ret = ddrphy_phyinit_softsetmb(myps, "dfifreqratio", 0x2);
+			ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_DFIFREQRATIO, 0x2);
 			if (ret != 0) {
 				return ret;
 			}
 		}
 
-		ret = ddrphy_phyinit_softsetmb(myps, "phyodtimpedance", 0);
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_PHYODTIMPEDANCE, 0);
 		if (ret != 0) {
 			return ret;
 		}
 
-		ret = ddrphy_phyinit_softsetmb(myps, "phydrvimpedance", 0);
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_PHYDRVIMPEDANCE, 0);
 		if (ret != 0) {
 			return ret;
 		}
 
-		ret = ddrphy_phyinit_softsetmb(myps, "bpznresval", 0);
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_BPZNRESVAL, 0);
 		if (ret != 0) {
 			return ret;
 		}
 
 #if STM32MP_DDR3_TYPE || STM32MP_DDR4_TYPE
-		ret = ddrphy_phyinit_softsetmb(myps,"enableddqs",nad0 * 8);
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_ENABLEDDQS, nad0 * 8);
 		if (ret != 0) {
 			return ret;
 		}
@@ -160,25 +161,26 @@ int ddrphy_phyinit_calcmb(void)
 									(0x1U << dbyte) : 0x0U);
 		}
 
-		ret = ddrphy_phyinit_softsetmb(myps, "disableddbyte", disableddbyte);
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_DISABLEDDBYTE, disableddbyte);
 		if (ret != 0) {
 			return ret;
 		}
 
 #if STM32MP_DDR3_TYPE
-		ret = ddrphy_phyinit_softsetmb(myps, "phycfg", userinputadvanced.is2ttiming[myps]);
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_PHYCFG,
+					       userinputadvanced.is2ttiming[myps]);
 		if (ret != 0) {
 			return ret;
 		}
 #else
-		ret = ddrphy_phyinit_softsetmb(myps, "phycfg",
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_PHYCFG,
 					       (mb_ddr_1d[myps].mr3 & 0x8U) ?
 					       0 : userinputadvanced.is2ttiming[myps]);
 		if (ret != 0) {
 			return ret;
 		}
 
-		ret = ddrphy_phyinit_softsetmb(myps, "x16present",
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_X16PRESENT,
 					       (0x10 == userinputbasic.dramdatawidth) ?
 					       mb_ddr_1d[myps].cspresent : 0x0);
 		if (ret != 0) {
@@ -186,24 +188,24 @@ int ddrphy_phyinit_calcmb(void)
 		}
 #endif /* STM32MP_DDR3_TYPE */
 #elif STM32MP_LPDDR4_TYPE
-		ret = ddrphy_phyinit_softsetmb(myps, "enableddqscha", nad0 * 8);
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_ENABLEDDQSCHA, nad0 * 8);
 		if (ret != 0) {
 			return ret;
 		}
 
-		ret = ddrphy_phyinit_softsetmb(myps, "cspresentcha",
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_CSPRESENTCHA,
 					       (2 == userinputbasic.numrank_dfi0) ?
 					       0x3 : userinputbasic.numrank_dfi0);
 		if (ret != 0) {
 			return ret;
 		}
 
-		ret = ddrphy_phyinit_softsetmb(myps, "enableddqschb", nad1 * 8);
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_ENABLEDDQSCHB, nad1 * 8);
 		if (ret != 0) {
 			return ret;
 		}
 
-		ret = ddrphy_phyinit_softsetmb(myps, "cspresentchb",
+		ret = ddrphy_phyinit_softsetmb(myps, MB_FIELD_CSPRESENTCHB,
 					       (2 == userinputbasic.numrank_dfi1) ?
 					       0x3 : userinputbasic.numrank_dfi1);
 		if (ret != 0) {

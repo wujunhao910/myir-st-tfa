@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022, STMicroelectronics - All Rights Reserved
+ * Copyright (C) 2021-2023, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -27,82 +27,102 @@
  * - -2 : when dramtype does not support 2D training but a 2D training field is
  * programmed.
  */
-int ddrphy_phyinit_softsetmb(int ps, char *field, int value)
+int ddrphy_phyinit_softsetmb(int ps, enum message_block_field field, int value)
 {
-		if (strcmp(field, "pstate") == 0) {
-			if (shdw_ddr_1d[ps].pstate == 0) {
-				mb_ddr_1d[ps].pstate = value;
-			}
-		} else if (strcmp(field, "pllbypassen") == 0) {
-			if (shdw_ddr_1d[ps].pllbypassen == 0) {
-				mb_ddr_1d[ps].pllbypassen = value;
-			}
-		} else if (strcmp(field, "dramfreq") == 0) {
-			if (shdw_ddr_1d[ps].dramfreq == 0) {
-				mb_ddr_1d[ps].dramfreq = value;
-			}
-		} else if (strcmp(field, "dfifreqratio") == 0) {
-			if (shdw_ddr_1d[ps].dfifreqratio == 0) {
-				mb_ddr_1d[ps].dfifreqratio = value;
-			}
-		} else if (strcmp(field, "bpznresval") == 0) {
-			if (shdw_ddr_1d[ps].bpznresval == 0) {
-				mb_ddr_1d[ps].bpznresval = value;
-			}
-		} else if (strcmp(field, "phyodtimpedance") == 0) {
-			if (shdw_ddr_1d[ps].phyodtimpedance == 0) {
-				mb_ddr_1d[ps].phyodtimpedance = value;
-			}
-		} else if (strcmp(field, "phydrvimpedance") == 0) {
-			if (shdw_ddr_1d[ps].phydrvimpedance == 0) {
-				mb_ddr_1d[ps].phydrvimpedance = value;
-			}
+	int ret = 0;
+
+	switch (field) {
+	case MB_FIELD_PSTATE:
+		if (shdw_ddr_1d[ps].pstate == 0) {
+			mb_ddr_1d[ps].pstate = value;
+		}
+		break;
+	case MB_FIELD_PLLBYPASSEN:
+		if (shdw_ddr_1d[ps].pllbypassen == 0) {
+			mb_ddr_1d[ps].pllbypassen = value;
+		}
+		break;
+	case MB_FIELD_DRAMFREQ:
+		if (shdw_ddr_1d[ps].dramfreq == 0) {
+			mb_ddr_1d[ps].dramfreq = value;
+		}
+		break;
+	case MB_FIELD_DFIFREQRATIO:
+		if (shdw_ddr_1d[ps].dfifreqratio == 0) {
+			mb_ddr_1d[ps].dfifreqratio = value;
+		}
+		break;
+	case MB_FIELD_BPZNRESVAL:
+		if (shdw_ddr_1d[ps].bpznresval == 0) {
+			mb_ddr_1d[ps].bpznresval = value;
+		}
+		break;
+	case MB_FIELD_PHYODTIMPEDANCE:
+		if (shdw_ddr_1d[ps].phyodtimpedance == 0) {
+			mb_ddr_1d[ps].phyodtimpedance = value;
+		}
+		break;
+	case MB_FIELD_PHYDRVIMPEDANCE:
+		if (shdw_ddr_1d[ps].phydrvimpedance == 0) {
+			mb_ddr_1d[ps].phydrvimpedance = value;
+		}
+		break;
 #if STM32MP_DDR3_TYPE || STM32MP_DDR4_TYPE
-		} else if (strcmp(field, "dramtype") == 0) {
-			if (shdw_ddr_1d[ps].dramtype == 0) {
-				mb_ddr_1d[ps].dramtype = value;
-			}
-		} else if (strcmp(field, "disableddbyte") == 0) {
-			if (shdw_ddr_1d[ps].disableddbyte == 0) {
-				mb_ddr_1d[ps].disableddbyte = value;
-			}
-		} else if (strcmp(field, "enableddqs") == 0) {
-			if (shdw_ddr_1d[ps].enableddqs == 0) {
-				mb_ddr_1d[ps].enableddqs = value;
-			}
-		} else if (strcmp(field, "phycfg") == 0) {
-			if (shdw_ddr_1d[ps].phycfg == 0) {
-				mb_ddr_1d[ps].phycfg = value;
-			}
+	case MB_FIELD_DRAMTYPE:
+		if (shdw_ddr_1d[ps].dramtype == 0) {
+			mb_ddr_1d[ps].dramtype = value;
+		}
+		break;
+	case MB_FIELD_DISABLEDDBYTE:
+		if (shdw_ddr_1d[ps].disableddbyte == 0) {
+			mb_ddr_1d[ps].disableddbyte = value;
+		}
+		break;
+	case MB_FIELD_ENABLEDDQS:
+		if (shdw_ddr_1d[ps].enableddqs == 0) {
+			mb_ddr_1d[ps].enableddqs = value;
+		}
+		break;
+	case MB_FIELD_PHYCFG:
+		if (shdw_ddr_1d[ps].phycfg == 0) {
+			mb_ddr_1d[ps].phycfg = value;
+		}
+		break;
 #endif /* STM32MP_DDR3_TYPE || STM32MP_DDR4_TYPE */
 #if STM32MP_DDR4_TYPE
-		} else if (strcmp(field, "x16present") == 0) {
-			if (shdw_ddr_1d[ps].x16present == 0) {
-				mb_ddr_1d[ps].x16present = value;
-			}
+	case MB_FIELD_X16PRESENT:
+		if (shdw_ddr_1d[ps].x16present == 0) {
+			mb_ddr_1d[ps].x16present = value;
+		}
+		break;
 #endif /* STM32MP_DDR4_TYPE */
 #if STM32MP_LPDDR4_TYPE
-		} else if (strcmp(field, "enableddqscha") == 0) {
-			if (shdw_ddr_1d[ps].enableddqscha == 0) {
-				mb_ddr_1d[ps].enableddqscha = value;
-			}
-		} else if (strcmp(field, "cspresentcha") == 0) {
-			if (shdw_ddr_1d[ps].cspresentcha == 0) {
-				mb_ddr_1d[ps].cspresentcha = value;
-			}
-		} else if (strcmp(field, "enableddqschb") == 0) {
-			if (shdw_ddr_1d[ps].enableddqschb == 0) {
-				mb_ddr_1d[ps].enableddqschb = value;
-			}
-		} else if (strcmp(field, "cspresentchb") == 0) {
-			if (shdw_ddr_1d[ps].cspresentchb == 0) {
-				mb_ddr_1d[ps].cspresentchb = value;
-			}
-#endif /* STM32MP_LPDDR4_TYPE */
-		} else {
-			ERROR("%s unknown message block field name '%s'\n", __func__, field);
-			return -1;
+	case MB_FIELD_ENABLEDDQSCHA:
+		if (shdw_ddr_1d[ps].enableddqscha == 0) {
+			mb_ddr_1d[ps].enableddqscha = value;
 		}
+		break;
+	case MB_FIELD_CSPRESENTCHA:
+		if (shdw_ddr_1d[ps].cspresentcha == 0) {
+			mb_ddr_1d[ps].cspresentcha = value;
+		}
+		break;
+	case MB_FIELD_ENABLEDDQSCHB:
+		if (shdw_ddr_1d[ps].enableddqschb == 0) {
+			mb_ddr_1d[ps].enableddqschb = value;
+		}
+		break;
+	case MB_FIELD_CSPRESENTCHB:
+		if (shdw_ddr_1d[ps].cspresentchb == 0) {
+			mb_ddr_1d[ps].cspresentchb = value;
+		}
+		break;
+#endif /* STM32MP_LPDDR4_TYPE */
+	default:
+		ERROR("unknown message block field %u\n", field);
+		ret = -1;
+		break;
+	}
 
-	return 0;
+	return ret;
 }
