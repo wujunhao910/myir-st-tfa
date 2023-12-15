@@ -41,12 +41,15 @@ int ddrphy_phyinit_f_loaddmem(int pstate)
 #if STM32MP_DDR3_TYPE || STM32MP_DDR4_TYPE
 	if ((msgblkptr->enableddqs > 8 * (userinputbasic.numactivedbytedfi0)) ||
 	    (msgblkptr->enableddqs <= 0)) {
-		ERROR("%s enableddqs is Zero or greater than NumActiveDbytes for Dfi0\n",__func__);
+		ERROR("%s %d\n", __func__, __LINE__);
+		VERBOSE("%s enableddqs is Zero or greater than NumActiveDbytes for Dfi0\n",
+			__func__);
 		return -1;
 	}
 #elif STM32MP_LPDDR4_TYPE
 	if (msgblkptr->enableddqscha % 16 != 0 || msgblkptr->enableddqschb % 16 != 0) {
-		ERROR("%s Lp3/Lp4 - Number of Dq's Enabled per Channel much be multipe of 16\n",
+		ERROR("%s %d\n", __func__, __LINE__);
+		VERBOSE("%s Lp3/Lp4 - Number of Dq's Enabled per Channel much be multipe of 16\n",
 		      __func__);
 		return -1;
 	}
@@ -54,7 +57,8 @@ int ddrphy_phyinit_f_loaddmem(int pstate)
 	if ((msgblkptr->enableddqscha > 8 * (userinputbasic.numactivedbytedfi0)) ||
 	    (msgblkptr->enableddqschb > 8 * (userinputbasic.numactivedbytedfi1)) ||
 	    (msgblkptr->enableddqscha == 0 && msgblkptr->enableddqschb == 0)) {
-		ERROR("%s EnabledDqsChA/B are not set correctly./1\n", __func__);
+		ERROR("%s %d\n", __func__, __LINE__);
+		VERBOSE("%s EnabledDqsChA/B are not set correctly./1\n", __func__);
 		return -1;
 	}
 #endif /* STM32MP_LPDDR4_TYPE */

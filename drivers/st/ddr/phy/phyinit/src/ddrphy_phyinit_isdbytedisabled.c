@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022, STMicroelectronics - All Rights Reserved
+ * Copyright (C) 2021-2023, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -31,8 +31,9 @@ int ddrphy_phyinit_isdbytedisabled(int dbytenumber)
 	nad1 = userinputbasic.numactivedbytedfi1;
 
 	if (nad0 + nad1 > userinputbasic.numdbyte) {
-		ERROR("%s invalid PHY configuration:\n", __func__);
-		ERROR("numactivedbytedfi0(%d)+numactivedbytedfi1(%d)>numdbytes(%d).\n",
+		ERROR("%s %d", __func__, __LINE__);
+		VERBOSE("%s invalid PHY configuration:\n", __func__);
+		VERBOSE("numactivedbytedfi0(%d)+numactivedbytedfi1(%d)>numdbytes(%d).\n",
 		      nad0, nad1, userinputbasic.numdbyte);
 	}
 
@@ -53,7 +54,8 @@ int ddrphy_phyinit_isdbytedisabled(int dbytenumber)
 	} else if (userinputbasic.dfi1exists == 0x0) {
 		disabledbyte = (dbytenumber > userinputbasic.numactivedbytedfi0 - 1) ? 1 : 0;
 	} else {
-		ERROR("%s invalid PHY configuration:dfi1exists is neither 1 or 0.\n", __func__);
+		ERROR("%s %d", __func__, __LINE__);
+		VERBOSE("%s invalid PHY configuration:dfi1exists is neither 1 or 0.\n", __func__);
 	}
 #endif /* STM32MP_LPDDR4_TYPE */
 
@@ -61,8 +63,9 @@ int ddrphy_phyinit_isdbytedisabled(int dbytenumber)
 #if STM32MP_DDR3_TYPE || STM32MP_DDR4_TYPE
 	if (mb_ddr_1d[0].enableddqs < 1 ||
 	    mb_ddr_1d[0].enableddqs > 8 * userinputbasic.numactivedbytedfi0) {
-		ERROR("%s enableddqs(%d)\n", __func__, mb_ddr_1d[0].enableddqs);
-		ERROR("Value must be 0 < enableddqs < userinputbasic.numactivedbytedfi0 * 8.\n");
+		ERROR("%s %d", __func__, __LINE__);
+		VERBOSE("%s enableddqs(%d)\n", __func__, mb_ddr_1d[0].enableddqs);
+		VERBOSE("Value must be 0 < enableddqs < userinputbasic.numactivedbytedfi0 * 8.\n");
 	}
 
 	if (dbytenumber < 8) {
@@ -71,15 +74,17 @@ int ddrphy_phyinit_isdbytedisabled(int dbytenumber)
 #elif STM32MP_LPDDR4_TYPE
 	if (mb_ddr_1d[0].enableddqscha < 1 ||
 	    mb_ddr_1d[0].enableddqscha > 8 * userinputbasic.numactivedbytedfi0) {
-		ERROR("%s enableddqscha(%d)\n", __func__, mb_ddr_1d[0].enableddqscha);
-		ERROR("Value must be 0 < enableddqscha < userinputbasic.numactivedbytedfi0 * 8.\n");
+		ERROR("%s %d", __func__, __LINE__);
+		VERBOSE("%s enableddqscha(%d)\n", __func__, mb_ddr_1d[0].enableddqscha);
+		VERBOSE("Value must be 0 < enableddqscha < userinputbasic.numactivedbytedfi0*8\n");
 	}
 
 	if (userinputbasic.dfi1exists && userinputbasic.numactivedbytedfi1 > 0 &&
 	    (mb_ddr_1d[0].enableddqschb < 1 ||
 	     mb_ddr_1d[0].enableddqschb > 8 * userinputbasic.numactivedbytedfi1)) {
-		ERROR("%s enableddqschb(%d)\n", __func__, mb_ddr_1d[0].enableddqschb);
-		ERROR("Value must be 0 < enableddqschb < userinputbasic.numactivedbytedfi1 * 8.\n");
+		ERROR("%s %d", __func__, __LINE__);
+		VERBOSE("%s enableddqschb(%d)\n", __func__, mb_ddr_1d[0].enableddqschb);
+		VERBOSE("Value must be 0 < enableddqschb < userinputbasic.numactivedbytedfi1*8\n");
 	}
 #endif /* STM32MP_LPDDR4_TYPE */
 

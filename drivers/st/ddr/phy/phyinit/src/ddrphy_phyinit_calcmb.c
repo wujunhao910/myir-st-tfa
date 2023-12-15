@@ -53,19 +53,22 @@ int ddrphy_phyinit_calcmb(void)
 
 	/* A few checks to make sure valid programming */
 	if (nad0 <= 0 || nad1 < 0 || userinputbasic.numdbyte <= 0) {
-		ERROR("%s numactivedbytedfi0, numactivedbytedfi0, NumByte out of range.\n",
+		ERROR("%s %d", __func__, __LINE__);
+		VERBOSE("%s numactivedbytedfi0, numactivedbytedfi0, NumByte out of range.\n",
 		      __func__);
 		return -1;
 	}
 
 	if ((nad0 + nad1) > userinputbasic.numdbyte) {
-		ERROR("%s numactivedbytedfi0+numactivedbytedfi1 is larger than numdbyteDfi0\n",
+		ERROR("%s %d", __func__, __LINE__);
+		VERBOSE("%s numactivedbytedfi0+numactivedbytedfi1 is larger than numdbyteDfi0\n",
 		      __func__);
 		return -1;
 	}
 
 	if (userinputbasic.dfi1exists == 0 && nad1 != 0) {
-		ERROR("%s dfi1exists==0 but numdbyteDfi0 != 0\n", __func__);
+		ERROR("%s %d", __func__, __LINE__);
+		VERBOSE("%s dfi1exists==0 but numdbyteDfi0 != 0\n", __func__);
 		return -1;
 	}
 
@@ -85,10 +88,11 @@ int ddrphy_phyinit_calcmb(void)
 
 #if STM32MP_DDR4_TYPE
 		if (mr4 != 0x0) {
-			ERROR("%s Setting DRAM CAL mode is not supported by the PHY.\n", __func__);
-			ERROR("Memory controller may set CAL mode after PHY has entered mission\n");
-			ERROR("mode. Please check value programmed in mb_ddr_1d[*].mr4\n");
-			ERROR("and unset A8:6\n");
+			ERROR("mr4 != 0x0\n");
+			VERBOSE("%s Setting DRAM CAL mode is not supported by the PHY.\n", __func__);
+			VERBOSE("Memory controller may set CAL mode after PHY has entered mission\n");
+			VERBOSE("mode. Please check value programmed in mb_ddr_1d[*].mr4\n");
+			VERBOSE("and unset A8:6\n");
 			return -1;
 		}
 #endif /* STM32MP_DDR4_TYPE */

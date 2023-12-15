@@ -270,13 +270,15 @@ int ddrphy_phyinit_mapdrvstren(int drvstren_ohm, enum drvtype targetcsr)
 		} else if (drvstren_ohm == 20) {
 			stren_setting = 0x1F;
 		} else {
-			ERROR("%s userinputadvanced.atximpedance %d Ohms value is not valid.\n",
+			ERROR("%s %d", __func__, __LINE__);
+			VERBOSE("%s userinputadvanced.atximpedance %d Ohms value is not valid.\n",
 			      __func__, drvstren_ohm);
-			ERROR("Valid values are: 20, 24, 30, 40, 60 and 120 Ohms.\n");
+			VERBOSE("Valid values are: 20, 24, 30, 40, 60 and 120 Ohms.\n");
 		}
 
 	} else {
-		ERROR("targetcsr = %u, in %s, is not valid.\n",
+		ERROR("%s %d", __func__, __LINE__);
+		VERBOSE("targetcsr = %u, in %s, is not valid.\n",
 		      targetcsr, __func__);
 	}
 

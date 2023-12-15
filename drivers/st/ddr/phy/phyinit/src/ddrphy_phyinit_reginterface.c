@@ -78,9 +78,10 @@ int ddrphy_phyinit_trackreg(uint32_t adr)
 
 	/* Register not found, so add it. */
 	if (numregsaved > MAX_NUM_RET_REGS) {
-		ERROR("[ddrphy_phyinit_reginterface:ddrphy_phyinit_trackreg]\n");
-		ERROR("Max Number of Restore Registers reached: %d.\n", numregsaved);
-		ERROR("Please recompile PhyInit with larger MAX_NUM_RET_REG value.\n");
+		ERROR("numregsaved > MAX_NUM_RET_REGS\n");
+		VERBOSE("[ddrphy_phyinit_reginterface:ddrphy_phyinit_trackreg]\n");
+		VERBOSE("Max Number of Restore Registers reached: %d.\n", numregsaved);
+		VERBOSE("Please recompile PhyInit with larger MAX_NUM_RET_REG value.\n");
 		return -1;
 	}
 
