@@ -497,6 +497,13 @@ int bl2_plat_handle_post_image_load(unsigned int image_id)
 			switch (image_ids[i]) {
 			case BL31_IMAGE_ID:
 				bl_mem_params->ep_info.pc = config_info->config_addr;
+				if (bl_mem_params->image_info.image_base == STM32MP_SYSRAM_BASE) {
+					bl_mem_params->image_info.image_max_size =
+						BL2_BASE - STM32MP_SYSRAM_BASE;
+					INFO("BL31 max size = 0x%x (%uB)\n",
+					     bl_mem_params->image_info.image_max_size,
+					     bl_mem_params->image_info.image_max_size);
+				}
 				break;
 			case BL32_IMAGE_ID:
 				bl_mem_params->ep_info.pc = config_info->config_addr;
