@@ -502,6 +502,9 @@ bool stm32mp_skip_boot_device_after_standby(void)
 
 bool stm32mp_is_wakeup_from_standby(void)
 {
+#if STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER
+	return false;
+#else /* STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER */
 	static int standby = -1;
 	uint32_t rstsr;
 
@@ -519,6 +522,7 @@ bool stm32mp_is_wakeup_from_standby(void)
 	}
 
 	return standby == 1;
+#endif /* STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER */
 }
 
 int stm32_risaf_get_instance(uintptr_t base)
