@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2024, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -352,7 +352,7 @@ int stm32mp_uart_console_setup(void)
 	}
 #endif
 
-#if STM32MP_UART_PROGRAMMER || !defined(IMAGE_BL2)
+#if (STM32MP_UART_PROGRAMMER || !defined(IMAGE_BL2)) && !STM32MP_SSP
 	stm32_get_boot_interface(&boot_itf, &boot_instance);
 
 	if ((boot_itf == BOOT_API_CTX_BOOT_INTERFACE_SEL_SERIAL_UART) &&
@@ -436,6 +436,7 @@ void stm32_display_board_info(uint32_t board_id)
 	       BOARD_ID2BOM(board_id));
 }
 
+#if !STM32MP_SSP
 void stm32_save_boot_info(boot_api_context_t *boot_context)
 {
 	struct nvmem_cell boot_mode = {};
@@ -644,3 +645,4 @@ void stm32_set_max_fwu_trial_boot_cnt(void)
 					FWU_INFO_CNT_MSK);
 }
 #endif /* PSA_FWU_SUPPORT */
+#endif /* !STM32MP_SSP */
