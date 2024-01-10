@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, STMicroelectronics - All Rights Reserved
+ * Copyright (c) 2023-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -544,7 +544,7 @@ int bl2_plat_handle_post_image_load(unsigned int image_id)
 #ifndef DECRYPTION_SUPPORT_none
 		/* Load encryption key info before DT is unmapped */
 		err = stm32_get_enc_key_otp_idx_len(&otp_idx, &otp_len);
-		if (err) {
+		if (err != 0) {
 			panic();
 		}
 #endif
@@ -563,7 +563,7 @@ int bl2_plat_handle_post_image_load(unsigned int image_id)
 			err = parse_optee_header(&bl_mem_params->ep_info,
 						 &pager_mem_params->image_info,
 						 NULL);
-			if (err) {
+			if (err != 0) {
 				ERROR("OPTEE header parse error.\n");
 				panic();
 			}
