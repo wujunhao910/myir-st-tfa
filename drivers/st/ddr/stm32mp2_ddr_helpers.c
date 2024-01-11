@@ -505,3 +505,21 @@ void ddr_sub_system_clk_init(void)
 	mmio_write_32(stm32mp_rcc_base() + RCC_DDRCPCFGR,
 		      RCC_DDRCPCFGR_DDRCPEN | RCC_DDRCPCFGR_DDRCPLPEN);
 }
+
+void ddr_sub_system_clk_off(void)
+{
+	uintptr_t rcc_base = stm32mp_rcc_base();
+
+	/* Clear DDR IO retention */
+	mmio_clrbits_32(stm32mp_pwr_base() + PWR_CR11, PWR_CR11_DDRRETDIS);
+
+	/* Reset DDR sub system */
+	mmio_write_32(rcc_base + RCC_DDRCPCFGR, RCC_DDRCPCFGR_DDRCPRST);
+	mmio_write_32(rcc_base + RCC_DDRITFCFGR, RCC_DDRITFCFGR_DDRRST);
+	mmio_write_32(rcc_base + RCC_DDRPHYCAPBCFGR, RCC_DDRPHYCAPBCFGR_DDRPHYCAPBRST);
+	mmio_write_32(rcc_base + RCC_DDRCAPBCFGR, RCC_DDRCAPBCFGR_DDRCAPBRST);
+
+	/* Deactivate clocks and PLL2 */
+	mmio_clrbits_32(rcc_base + RCC_DDRPHYCCFGR, RCC_DDRPHYCCFGR_DDRPHYCEN);
+	mmio_clrbits_32(rcc_base + RCC_PLL2CFGR1, RCC_PLL2CFGR1_PLLEN);
+}

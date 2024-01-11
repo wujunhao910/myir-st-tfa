@@ -30,5 +30,6 @@ void ddr_set_sr_mode(enum stm32mp2_ddr_sr_mode mode);
 void ddr_save_sr_mode(void);
 void ddr_restore_sr_mode(void);
 void ddr_sub_system_clk_init(void);
+void ddr_sub_system_clk_off(void);
 
 #endif /* STM32MP2_DDR_HELPERS_H */
