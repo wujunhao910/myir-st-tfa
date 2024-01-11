@@ -268,6 +268,26 @@ static void reset_backup_domain(void)
 	}
 }
 
+static void stm32_tamp_check_tamper_event(void)
+{
+	uint32_t sr = mmio_read_32(TAMP_BASE + TAMP_SR);
+
+	if (sr != 0U) {
+		ERROR("\n");
+		while (sr != 0U) {
+			unsigned int bit_off = __builtin_ctz(sr);
+			bool is_internal = bit_off >= TAMP_SR_INT_SHIFT;
+
+			ERROR("** INTRUSION ALERT: %s TAMPER %u DETECTED **\n",
+			      is_internal ? "INTERNAL" : "EXTERNAL",
+			      is_internal ? (bit_off - TAMP_SR_INT_SHIFT + 1U) : (bit_off + 1U));
+
+			sr &= ~BIT(bit_off);
+		}
+		ERROR("\n");
+	}
+}
+
 void bl2_el3_plat_arch_setup(void)
 {
 	const char *board_model;
@@ -357,6 +377,8 @@ void bl2_el3_plat_arch_setup(void)
 	}
 
 skip_console_init:
+	stm32_tamp_check_tamper_event();
+
 #if !TRUSTED_BOARD_BOOT
 	if (stm32mp_check_closed_device() == STM32MP_CHIP_SEC_CLOSED) {
 		/* Closed chip mandates authentication */
