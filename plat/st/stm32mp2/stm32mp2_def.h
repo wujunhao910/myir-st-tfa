@@ -433,6 +433,8 @@ enum ddr_type {
 #define PLAT_MAX_TAMP_EXT		U(3)
 #define TAMP_BASE			U(0x46010000)
 #define TAMP_SMCR			(TAMP_BASE + U(0x20))
+#define TAMP_SR				(TAMP_BASE + U(0x30))
+#define TAMP_SR_INT_SHIFT		U(16)
 #define TAMP_BKP_REG_CLK		CK_BUS_RTC
 #define TAMP_BKP_SEC_NUMBER		U(10)
 #define TAMP_COUNTR			U(0x40)
