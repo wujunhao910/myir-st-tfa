@@ -92,13 +92,13 @@ static void print_reset_reason(void)
 	INFO("Reset reason (0x%x):\n", rstsr);
 
 	if ((rstsr & RCC_C1BOOTRSTSCLRR_PADRSTF) == 0U) {
-		if ((rstsr & RCC_C1BOOTRSTSCLRR_D1STBYRSTF) != 0U) {
-			INFO("D1 domain exits from DStandby\n");
+		if ((rstsr & RCC_C1BOOTRSTSCLRR_STBYC1RSTF) != 0U) {
+			INFO("System exits from Standby for CA35\n");
 			return;
 		}
 
-		if ((rstsr & RCC_C1BOOTRSTSCLRR_STBYC1RSTF) != 0U) {
-			INFO("System exits from A35 STANDBY\n");
+		if ((rstsr & RCC_C1BOOTRSTSCLRR_D1STBYRSTF) != 0U) {
+			INFO("D1 domain exits from DStandby\n");
 			return;
 		}
 	}
