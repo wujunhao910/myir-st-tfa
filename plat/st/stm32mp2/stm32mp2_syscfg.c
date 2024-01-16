@@ -118,7 +118,7 @@ static uint32_t syscfg_cccr_offset[SYSFG_NB_IO_ID] = {
  * @brief  Get silicon revision from SYSCFG registers.
  * @retval chip version (REV_ID).
  */
-uint32_t stm32mp2_syscfg_get_chip_version(void)
+uint32_t stm32mp_syscfg_get_chip_version(void)
 {
 	return (mmio_read_32(SYSCFG_BASE + SYSCFG_DEVICEID) &
 		SYSCFG_DEVICEID_REV_ID_MASK) >> SYSCFG_DEVICEID_REV_ID_SHIFT;
@@ -128,12 +128,12 @@ uint32_t stm32mp2_syscfg_get_chip_version(void)
  * @brief  Get device ID from SYSCFG registers.
  * @retval device ID (DEV_ID).
  */
-uint32_t stm32mp2_syscfg_get_chip_dev_id(void)
+uint32_t stm32mp_syscfg_get_chip_dev_id(void)
 {
 	return mmio_read_32(SYSCFG_BASE + SYSCFG_DEVICEID) & SYSCFG_DEVICEID_DEV_ID_MASK;
 }
 
-size_t stm32mp2_syscfg_get_mm_size(uint8_t bank)
+size_t stm32mp_syscfg_get_mm_size(uint8_t bank)
 {
 	uint32_t amcr = mmio_read_32(SYSCFG_BASE + SYSCFG_OCTOSPIAMCR);
 	size_t addr_mapping1 = 0U;
@@ -168,7 +168,7 @@ size_t stm32mp2_syscfg_get_mm_size(uint8_t bank)
  * @param  id: IO compensation ID
  * @retval 0.
  */
-void stm32mp2_syscfg_enable_io_compensation(enum syscfg_io_ids id)
+void stm32mp_syscfg_enable_io_compensation(enum syscfg_io_ids id)
 {
 	uintptr_t cccr_addr = SYSCFG_BASE + syscfg_cccr_offset[id];
 	uintptr_t ccsr_addr = cccr_addr + 4U;
@@ -241,12 +241,12 @@ static int stm32_syscfg_dlyb_set_tap(uint8_t bank, uint8_t tap, bool rx_tap)
 	return 0;
 }
 
-void stm32mp2_syscfg_dlyb_stop(uint8_t bank)
+void stm32mp_syscfg_dlyb_stop(uint8_t bank)
 {
 	mmio_write_32(SYSCFG_BASE + syscfg_dlybos_cr_offset[bank], 0x0);
 }
 
-int stm32mp2_syscfg_dlyb_find_tap(uint8_t bank, int (*check_transfer)(void),
+int stm32mp_syscfg_dlyb_find_tap(uint8_t bank, int (*check_transfer)(void),
 				  bool rx_only, uint8_t *window_len)
 {
 	struct syscfg_tap_window rx_tap_w[SYSCFG_DLYBOS_TAPSEL_NB];
@@ -379,7 +379,7 @@ int stm32mp2_syscfg_dlyb_find_tap(uint8_t bank, int (*check_transfer)(void),
 	return stm32_syscfg_dlyb_set_tap(bank, best_tx_tap, false);
 }
 
-int stm32mp2_syscfg_dlyb_set_cr(uint8_t bank, uint32_t dlyb_cr)
+int stm32mp_syscfg_dlyb_set_cr(uint8_t bank, uint32_t dlyb_cr)
 {
 	bool bypass_mode = false;
 	uint16_t period_ps;
@@ -393,7 +393,7 @@ int stm32mp2_syscfg_dlyb_set_cr(uint8_t bank, uint32_t dlyb_cr)
 		bypass_mode = true;
 	}
 
-	ret = stm32mp2_syscfg_dlyb_init(bank, bypass_mode, period_ps);
+	ret = stm32mp_syscfg_dlyb_init(bank, bypass_mode, period_ps);
 	if (ret != 0) {
 		return ret;
 	}
@@ -412,7 +412,7 @@ int stm32mp2_syscfg_dlyb_set_cr(uint8_t bank, uint32_t dlyb_cr)
 	return stm32_syscfg_dlyb_set_tap(bank, tx_tap, false);
 }
 
-void stm32mp2_syscfg_dlyb_get_cr(uint8_t bank, uint32_t *dlyb_cr)
+void stm32mp_syscfg_dlyb_get_cr(uint8_t bank, uint32_t *dlyb_cr)
 {
 	uintptr_t cr = SYSCFG_BASE + syscfg_dlybos_cr_offset[bank];
 
@@ -426,7 +426,7 @@ static const uint16_t syscfg_dlybos_cmd_delay_ps[SYSCFG_DLYBOS_CMD_NB] = {
 28768U, 30400U, 32000U, 33600U, 35232U, 36832U, 38432U, 40032U
 };
 
-static uint32_t stm32mp2_syscfg_find_byp_cmd(uint16_t period_ps)
+static uint32_t stm32mp_syscfg_find_byp_cmd(uint16_t period_ps)
 {
 	uint16_t half_period_ps = period_ps / 2U;
 	uint8_t max = SYSCFG_DLYBOS_CMD_NB - 1U;
@@ -461,7 +461,7 @@ static uint32_t stm32mp2_syscfg_find_byp_cmd(uint16_t period_ps)
 	}
 }
 
-int stm32mp2_syscfg_dlyb_init(uint8_t bank, bool bypass_mode,
+int stm32mp_syscfg_dlyb_init(uint8_t bank, bool bypass_mode,
 			      uint16_t period_ps)
 {
 	uint64_t timeout;
@@ -476,7 +476,7 @@ int stm32mp2_syscfg_dlyb_init(uint8_t bank, bool bypass_mode,
 	if (bypass_mode) {
 		mask = SYSCFG_DLYBOS_BYP_EN | SYSCFG_DLYBOS_BYP_CMD_MASK;
 		val = SYSCFG_DLYBOS_BYP_EN |
-		      stm32mp2_syscfg_find_byp_cmd(period_ps);
+		      stm32mp_syscfg_find_byp_cmd(period_ps);
 	} else {
 		mask = SYSCFG_DLYBOS_CR_EN;
 		val = SYSCFG_DLYBOS_CR_EN;
@@ -503,7 +503,7 @@ int stm32mp2_syscfg_dlyb_init(uint8_t bank, bool bypass_mode,
 }
 #endif
 
-void stm32mp2_syscfg_mask_potential_tamper_enable(void)
+void stm32mp_syscfg_mask_potential_tamper_enable(void)
 {
 #if !STM32MP_M33_TDCID
 	mmio_setbits_32(SYSCFG_BASE + SYSCFG_POTTAMPRSTCR,
@@ -511,7 +511,7 @@ void stm32mp2_syscfg_mask_potential_tamper_enable(void)
 #endif
 }
 
-void stm32mp2_syscfg_mask_potential_tamper_disable(void)
+void stm32mp_syscfg_mask_potential_tamper_disable(void)
 {
 #if !STM32MP_M33_TDCID
 	mmio_clrbits_32(SYSCFG_BASE + SYSCFG_POTTAMPRSTCR,
@@ -524,7 +524,7 @@ void stm32mp2_syscfg_mask_potential_tamper_disable(void)
  *	   By default, SYSCFG_ICN* register keep their reset values
  * @retval 0.
  */
-void stm32mp2_syscfg_set_icn_qos(void)
+void stm32mp_syscfg_set_icn_qos(void)
 {
 /*
  *	Reset values, un-comment and change if required

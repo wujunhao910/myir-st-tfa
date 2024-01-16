@@ -194,12 +194,12 @@ uintptr_t stm32_get_header_address(void)
 
 uint32_t stm32mp_get_chip_version(void)
 {
-	return stm32mp2_syscfg_get_chip_version();
+	return stm32mp_syscfg_get_chip_version();
 }
 
 uint32_t stm32mp_get_chip_dev_id(void)
 {
-	return stm32mp2_syscfg_get_chip_dev_id();
+	return stm32mp_syscfg_get_chip_dev_id();
 }
 
 static uint32_t get_part_number(void)

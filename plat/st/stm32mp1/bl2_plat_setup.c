@@ -359,7 +359,7 @@ void bl2_el3_plat_arch_setup(void)
 	}
 
 	/* Enter in boot mode */
-	stm32mp1_syscfg_boot_mode_enable();
+	stm32mp_syscfg_boot_mode_enable();
 
 	stm32mp_print_cpuinfo();
 
@@ -407,7 +407,7 @@ skip_console_init:
 		print_pmic_info_and_debug();
 	}
 
-	stm32mp1_syscfg_init();
+	stm32mp_syscfg_init();
 
 	if (stm32_iwdg_init() < 0) {
 		panic();
@@ -439,7 +439,7 @@ skip_console_init:
 	update_monotonic_counter();
 #endif
 
-	stm32mp1_syscfg_enable_io_compensation_finish();
+	stm32mp_syscfg_enable_io_compensation_finish();
 
 	fconf_populate("TB_FW", STM32MP_DTB_BASE);
 
@@ -719,5 +719,5 @@ void bl2_el3_plat_prepare_exit(void)
 	stm32mp1_security_setup();
 
 	/* end of boot mode */
-	stm32mp1_syscfg_boot_mode_disable();
+	stm32mp_syscfg_boot_mode_disable();
 }

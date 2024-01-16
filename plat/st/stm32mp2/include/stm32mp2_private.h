@@ -12,18 +12,18 @@ void configure_mmu(void);
 void stm32mp2_arch_security_setup(void);
 void stm32mp2_security_setup(void);
 
-uint32_t stm32mp2_syscfg_get_chip_version(void);
-uint32_t stm32mp2_syscfg_get_chip_dev_id(void);
-void stm32mp2_syscfg_mask_potential_tamper_enable(void);
-void stm32mp2_syscfg_mask_potential_tamper_disable(void);
-size_t stm32mp2_syscfg_get_mm_size(uint8_t bank);
-int stm32mp2_syscfg_dlyb_init(uint8_t bank, bool bypass_mode,
+uint32_t stm32mp_syscfg_get_chip_version(void);
+uint32_t stm32mp_syscfg_get_chip_dev_id(void);
+void stm32mp_syscfg_mask_potential_tamper_enable(void);
+void stm32mp_syscfg_mask_potential_tamper_disable(void);
+size_t stm32mp_syscfg_get_mm_size(uint8_t bank);
+int stm32mp_syscfg_dlyb_init(uint8_t bank, bool bypass_mode,
 			      uint16_t period_ps);
-int stm32mp2_syscfg_dlyb_find_tap(uint8_t bank, int (*check_transfer)(void),
+int stm32mp_syscfg_dlyb_find_tap(uint8_t bank, int (*check_transfer)(void),
 				  bool rx_only, uint8_t *window_len);
-int stm32mp2_syscfg_dlyb_set_cr(uint8_t bank, uint32_t dlyb_cr);
-void stm32mp2_syscfg_dlyb_get_cr(uint8_t bank, uint32_t *dlyb_cr);
-void stm32mp2_syscfg_dlyb_stop(uint8_t bank);
+int stm32mp_syscfg_dlyb_set_cr(uint8_t bank, uint32_t dlyb_cr);
+void stm32mp_syscfg_dlyb_get_cr(uint8_t bank, uint32_t *dlyb_cr);
+void stm32mp_syscfg_dlyb_stop(uint8_t bank);
 
 /* IO compensation identifiers */
 enum syscfg_io_ids {
@@ -35,9 +35,9 @@ enum syscfg_io_ids {
 	SYSFG_NB_IO_ID
 };
 
-void stm32mp2_syscfg_enable_io_compensation(enum syscfg_io_ids id);
+void stm32mp_syscfg_enable_io_compensation(enum syscfg_io_ids id);
 
-void stm32mp2_syscfg_set_icn_qos(void);
+void stm32mp_syscfg_set_icn_qos(void);
 
 int stm32mp2_pwr_init_io_domains(void);
 

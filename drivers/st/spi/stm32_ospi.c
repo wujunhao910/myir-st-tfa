@@ -280,7 +280,7 @@ static int stm32_ospi_dtr_calibrate(uint32_t prescaler, unsigned int bus_freq,
 		period_ps = _OSPI_NSEC_PER_SEC / (bus_freq / 1000U);
 	}
 
-	ret = stm32mp2_syscfg_dlyb_init(stm32_ospi.bank, bypass_mode,
+	ret = stm32mp_syscfg_dlyb_init(stm32_ospi.bank, bypass_mode,
 					period_ps);
 	if (ret != 0) {
 		return ret;
@@ -288,12 +288,12 @@ static int stm32_ospi_dtr_calibrate(uint32_t prescaler, unsigned int bus_freq,
 
 	if (bypass_mode || (prescaler != 0U)) {
 		/* perform only RX TAP selection */
-		ret = stm32mp2_syscfg_dlyb_find_tap(stm32_ospi.bank,
+		ret = stm32mp_syscfg_dlyb_find_tap(stm32_ospi.bank,
 						    check_transfer,
 						    true, &window_len);
 	} else {
 		/* perform RX/TX TAP selection */
-		ret = stm32mp2_syscfg_dlyb_find_tap(stm32_ospi.bank,
+		ret = stm32mp_syscfg_dlyb_find_tap(stm32_ospi.bank,
 						    check_transfer,
 						    false, &window_len);
 	}
@@ -302,7 +302,7 @@ static int stm32_ospi_dtr_calibrate(uint32_t prescaler, unsigned int bus_freq,
 		ERROR("Calibration failed\n");
 
 		if (!bypass_mode) {
-			stm32mp2_syscfg_dlyb_stop(stm32_ospi.bank);
+			stm32mp_syscfg_dlyb_stop(stm32_ospi.bank);
 		}
 	}
 
@@ -886,29 +886,29 @@ static int stm32_ospi_str_calibration(void)
 	}
 
 	/* Perform calibration */
-	ret = stm32mp2_syscfg_dlyb_init(stm32_ospi.bank, false, 0U);
+	ret = stm32mp_syscfg_dlyb_init(stm32_ospi.bank, false, 0U);
 	if (ret != 0) {
 		return ret;
 	}
 
 	/* Perform only RX TAP selection */
-	ret_tcr0 = stm32mp2_syscfg_dlyb_find_tap(stm32_ospi.bank,
+	ret_tcr0 = stm32mp_syscfg_dlyb_find_tap(stm32_ospi.bank,
 						 stm32_ospi_readid,
 						 true, &window_len_tcr0);
 	if (ret_tcr0 == 0) {
-		stm32mp2_syscfg_dlyb_get_cr(stm32_ospi.bank, &dlyb_cr);
+		stm32mp_syscfg_dlyb_get_cr(stm32_ospi.bank, &dlyb_cr);
 	}
 
-	stm32mp2_syscfg_dlyb_stop(stm32_ospi.bank);
+	stm32mp_syscfg_dlyb_stop(stm32_ospi.bank);
 
-	ret = stm32mp2_syscfg_dlyb_init(stm32_ospi.bank, false, 0U);
+	ret = stm32mp_syscfg_dlyb_init(stm32_ospi.bank, false, 0U);
 	if (ret != 0) {
 		return ret;
 	}
 
 	mmio_setbits_32(ospi_base() + _OSPI_TCR, _OSPI_TCR_SSHIFT);
 
-	ret_tcr1 = stm32mp2_syscfg_dlyb_find_tap(stm32_ospi.bank,
+	ret_tcr1 = stm32mp_syscfg_dlyb_find_tap(stm32_ospi.bank,
 						 stm32_ospi_readid,
 						 true, &window_len_tcr1);
 	if ((ret_tcr0 != 0) && (ret_tcr1 != 0)) {
@@ -919,9 +919,9 @@ static int stm32_ospi_str_calibration(void)
 
 	if (window_len_tcr0 >= window_len_tcr1) {
 		mmio_clrbits_32(ospi_base() + _OSPI_TCR, _OSPI_TCR_SSHIFT);
-		stm32mp2_syscfg_dlyb_stop(stm32_ospi.bank);
+		stm32mp_syscfg_dlyb_stop(stm32_ospi.bank);
 
-		ret = stm32mp2_syscfg_dlyb_set_cr(stm32_ospi.bank, dlyb_cr);
+		ret = stm32mp_syscfg_dlyb_set_cr(stm32_ospi.bank, dlyb_cr);
 		if (ret != 0) {
 			return ret;
 		}
@@ -946,7 +946,7 @@ static int stm32_ospi_dtr_calibration(bool octal_dtr)
 	bus_freq = div_round_up(clk_get_rate(stm32_ospi.clock_id),
 				prescaler + 1U);
 
-	stm32mp2_syscfg_dlyb_stop(stm32_ospi.bank);
+	stm32mp_syscfg_dlyb_stop(stm32_ospi.bank);
 	mmio_clrbits_32(ospi_base() + _OSPI_TCR, _OSPI_TCR_SSHIFT);
 	flash->octal_dtr = octal_dtr;
 
@@ -1020,14 +1020,14 @@ static int stm32_ospi_claim_bus(unsigned int cs)
 
 	/* Calibration is done once */
 	if (!flash->str_calibration_done_once) {
-		stm32mp2_syscfg_dlyb_stop(stm32_ospi.bank);
+		stm32mp_syscfg_dlyb_stop(stm32_ospi.bank);
 		mmio_clrbits_32(ospi_base() + _OSPI_TCR, _OSPI_TCR_SSHIFT);
 
 		if (stm32_ospi_str_calibration() != 0) {
 			WARN("Set flash frequency to a safe value (%u Hz)\n",
 			     _DLYB_FREQ_50MHZ);
 
-			stm32mp2_syscfg_dlyb_stop(stm32_ospi.bank);
+			stm32mp_syscfg_dlyb_stop(stm32_ospi.bank);
 			mmio_clrbits_32(ospi_base() + _OSPI_TCR,
 					_OSPI_TCR_SSHIFT);
 
@@ -1219,7 +1219,7 @@ int stm32_ospi_init(void)
 	}
 
 	stm32_ospi.reg_base = fdt32_to_cpu(*(cuint + 1U)) + bank_address[bank];
-	stm32_ospi.mm_size = stm32mp2_syscfg_get_mm_size(bank);
+	stm32_ospi.mm_size = stm32mp_syscfg_get_mm_size(bank);
 	stm32_ospi.mm_base = bank == 0U ?
 			     mm_base : mm_base + mm_size - stm32_ospi.mm_size;
 	stm32_ospi.bank = bank;

@@ -181,7 +181,7 @@ int stm32mp2_pwr_init_io_domains(void)
 				return ret;
 			}
 
-			stm32mp2_syscfg_enable_io_compensation(regu->comp_idx);
+			stm32mp_syscfg_enable_io_compensation(regu->comp_idx);
 		}
 	}
 
