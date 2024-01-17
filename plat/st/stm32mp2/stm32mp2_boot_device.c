@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022, STMicroelectronics - All Rights Reserved
+ * Copyright (c) 2021-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -36,7 +36,7 @@ static int get_data_from_otp(struct nand_device *nand_dev, bool is_slc)
 	}
 
 	if (stm32_get_otp_value(NAND2_OTP, &nand2_param) != 0) {
-		ERROR("BSEC: NAND_OTP Error\n");
+		ERROR("BSEC: NAND2_OTP Error\n");
 		return -EACCES;
 	}
 
