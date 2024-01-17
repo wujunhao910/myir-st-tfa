@@ -501,7 +501,6 @@ int bl2_plat_handle_post_image_load(unsigned int image_id)
 {
 	int err = 0;
 	bl_mem_params_node_t *bl_mem_params = get_bl_mem_params_node(image_id);
-	bl_mem_params_node_t *bl32_mem_params __unused;
 	bl_mem_params_node_t *pager_mem_params __unused;
 	const struct dyn_cfg_dtb_info_t *config_info;
 	unsigned int i;
