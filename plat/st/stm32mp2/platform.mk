@@ -103,8 +103,9 @@ STM32MP_FW_CONFIG_NAME	:=	$(patsubst %.dtb,%-fw-config.dtb,$(DTB_FILE_NAME))
 STM32MP_FW_CONFIG	:=	${BUILD_PLAT}/fdts/$(STM32MP_FW_CONFIG_NAME)
 STM32MP_SOC_FW_CONFIG	:=	$(addprefix ${BUILD_PLAT}/fdts/, $(patsubst %.dtb,%-bl31.dtb,$(DTB_FILE_NAME)))
 ifeq (${STM32MP_DDR_FIP_IO_STORAGE},1)
+STM32MP_DDR_FW_PATH	?=	drivers/st/ddr/phy/firmware/bin
 STM32MP_DDR_FW_NAME	:=	${DDR_TYPE}_pmu_train.bin
-STM32MP_DDR_FW		:=	drivers/st/ddr/phy/firmware/bin/${STM32MP_DDR_FW_NAME}
+STM32MP_DDR_FW		:=	${STM32MP_DDR_FW_PATH}/${STM32MP_DDR_FW_NAME}
 endif
 FDT_SOURCES		+=	$(addprefix $(DT_SOURCE_PATH)/, $(patsubst %.dtb,%.dts,$(STM32MP_FW_CONFIG_NAME)))
 # Add the FW_CONFIG to FIP and specify the same to certtool
