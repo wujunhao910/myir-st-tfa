@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, STMicroelectronics - All Rights Reserved
+ * Copyright (c) 2023-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -136,29 +136,17 @@ uint32_t stm32mp_syscfg_get_chip_dev_id(void)
 size_t stm32mp_syscfg_get_mm_size(uint8_t bank)
 {
 	uint32_t amcr = mmio_read_32(SYSCFG_BASE + SYSCFG_OCTOSPIAMCR);
-	size_t addr_mapping1 = 0U;
-	size_t addr_mapping2 = 0U;
+	uint32_t oam = amcr & SYSCFG_OCTOSPIAMCR_OAM_MASK;
+	size_t addr_mapping1;
+	size_t addr_mapping2;
 
-	switch (amcr & SYSCFG_OCTOSPIAMCR_OAM_MASK) {
-	case 0:
-		addr_mapping1 = SZ_256M;
-		break;
-	case 1:
-		addr_mapping1 = SZ_128M + SZ_64M;
-		addr_mapping2 = SZ_64M;
-		break;
-	case 2:
-		addr_mapping1 = SZ_128M;
-		addr_mapping2 = SZ_128M;
-		break;
-	case 3:
-		addr_mapping1 = SZ_64M;
-		addr_mapping2 = SZ_128M + SZ_64M;
-		break;
-	default:
+	if (oam > 3U) {
 		addr_mapping2 = SZ_256M;
-		break;
+	} else {
+		addr_mapping2 = oam * SZ_64M;
 	}
+
+	addr_mapping1 = SZ_256M - addr_mapping2;
 
 	return (bank == 0U) ? addr_mapping1 : addr_mapping2;
 }
