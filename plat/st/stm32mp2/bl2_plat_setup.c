@@ -373,8 +373,6 @@ skip_console_init:
 		initialize_pmic();
 	}
 
-	stm32mp2_arch_security_setup();
-
 	fconf_populate("TB_FW", STM32MP_DTB_BASE);
 
 #if STM32MP_DDR_FIP_IO_STORAGE || TRUSTED_BOARD_BOOT
@@ -677,7 +675,6 @@ void bl2_el3_plat_prepare_exit(void)
 	flush_dcache_range(DATA_START, DATA_END - DATA_START);
 
 	stm32mp_io_exit();
-	stm32mp2_security_setup();
 
 	/* Unmask potential tamper before exit */
 	stm32mp_syscfg_mask_potential_tamper_disable();

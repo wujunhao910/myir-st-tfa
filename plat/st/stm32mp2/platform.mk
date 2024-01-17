@@ -208,8 +208,7 @@ PLAT_BL_COMMON_SOURCES	+=	drivers/st/clk/clk-stm32-core.c				\
 
 PLAT_BL_COMMON_SOURCES  +=	drivers/st/nvmem/stm32mp_tamp_nvram_mp2.c
 
-BL2_SOURCES		+=	plat/st/stm32mp2/plat_bl2_mem_params_desc.c		\
-				plat/st/stm32mp2/stm32mp2_fconf_firewall.c
+BL2_SOURCES		+=	plat/st/stm32mp2/plat_bl2_mem_params_desc.c
 
 BL2_SOURCES		+=	drivers/st/crypto/stm32_hash.c				\
 				plat/st/stm32mp2/bl2_plat_setup.c			\
