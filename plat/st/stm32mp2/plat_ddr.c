@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023, STMicroelectronics - All Rights Reserved
+ * Copyright (C) 2023-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -14,7 +14,7 @@
 
 #include <platform_def.h>
 
-static int pmic_ddr_power_init(enum ddr_type ddr_type)
+static int pmic_ddr_power_init(void)
 {
 #if STM32MP_DDR4_TYPE
 	int status;
@@ -149,7 +149,8 @@ static int pmic_ddr_power_init(enum ddr_type ddr_type)
 int stm32mp_board_ddr_power_init(enum ddr_type ddr_type)
 {
 	if (dt_pmic_status() > 0) {
-		return pmic_ddr_power_init(ddr_type);
+		VERBOSE("PMIC DDR power init, ddr_type = %u\n", ddr_type);
+		return pmic_ddr_power_init();
 	}
 
 	return 0;
