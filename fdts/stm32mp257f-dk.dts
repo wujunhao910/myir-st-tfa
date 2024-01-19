@@ -47,6 +47,12 @@
 	};
 };
 
+&ddr {
+	vdd1-supply = <&vdd1_ddr>;
+	vdd2-supply = <&vdd2_ddr>;
+	vddq-supply = <&vdd2_ddr>;
+};
+
 &hash {
 	status = "okay";
 };

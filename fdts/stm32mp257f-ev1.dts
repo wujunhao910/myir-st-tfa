@@ -47,6 +47,13 @@
 	};
 };
 
+&ddr {
+	vdd-supply = <&vdd_ddr>;
+	vtt-supply = <&vtt_ddr>;
+	vpp-supply = <&vpp_ddr>;
+	vref-supply = <&vref_ddr>;
+};
+
 &hash {
 	status = "okay";
 };
