@@ -34,4 +34,7 @@ static inline void stm32mp1_syscfg_boot_mode_disable(void){}
 void stm32mp1_deconfigure_uart_pins(void);
 
 void stm32mp1_init_scmi_server(void);
+
+bool stm32mp_bkpram_get_access(void);
+
 #endif /* STM32MP1_PRIVATE_H */

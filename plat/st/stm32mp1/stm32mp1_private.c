@@ -763,3 +763,33 @@ void stm32_set_max_fwu_trial_boot_cnt(void)
 	clk_disable(RTCAPB);
 }
 #endif /* PSA_FWU_SUPPORT */
+
+#if STM32MP13
+bool stm32mp_bkpram_get_access(void)
+{
+	static bool state = true;
+
+	if (!state) {
+		return state;
+	}
+
+	clk_enable(RTCAPB);
+
+	if ((mmio_read_32(TAMP_BASE + TAMP_ERCFGR) != 0U) &&
+	    (mmio_read_32(TAMP_BASE + TAMP_SR) != 0U) &&
+	    (((mmio_read_32(TAMP_BASE + TAMP_CR2) & TAMP_CR2_MASK_NOER) == 0U) ||
+	     ((mmio_read_32(TAMP_BASE + TAMP_CR3) & TAMP_CR3_MASK_NOER) == 0U))) {
+		NOTICE("TAMPER detected : Degraded mode\n");
+		state = false;
+	}
+
+	clk_disable(RTCAPB);
+
+	return state;
+}
+#else /* STM32MP15 */
+bool stm32mp_bkpram_get_access(void)
+{
+	return true;
+}
+#endif
