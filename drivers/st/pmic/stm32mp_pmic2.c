@@ -450,6 +450,15 @@ static int register_pmic2(void)
 				return ret;
 			}
 		}
+
+		if (fdt_getprop(fdt, subnode, "st,regulator-sink-source", NULL) != NULL) {
+			VERBOSE("%s: set regulator-sink-source\n", desc->node_name);
+			ret = pmic2_set_flag(desc, REGUL_SINK_SOURCE);
+			if (ret != 0) {
+				ERROR("set regulator-sink-source failed\n");
+				return ret;
+			}
+		}
 	}
 
 	return 0;
