@@ -16,6 +16,53 @@
 
 #include <platform_def.h>
 
+#if STM32MP_DDR3_TYPE
+struct ddr3_supply {
+	struct rdev *vdd;
+	struct rdev *vref;
+	struct rdev *vtt;
+};
+
+static void ddr3_supply_read(void *fdt, int node, struct ddr3_supply *supply)
+{
+	supply->vdd = regulator_get_by_supply_name(fdt, node, "vdd");
+	supply->vref = regulator_get_by_supply_name(fdt, node, "vref");
+	supply->vtt = regulator_get_by_supply_name(fdt, node, "vtt");
+}
+
+static int ddr_power_init(void *fdt, int node)
+{
+	int status;
+	struct ddr3_supply supply;
+
+	ddr3_supply_read(fdt, node, &supply);
+	if ((supply.vdd == NULL) || (supply.vref == NULL) || (supply.vtt == NULL)) {
+		return -ENOENT;
+	}
+
+	/*
+	 * DDR3 power on sequence is:
+	 * enable VREF_DDR, VTT_DDR, VPP_DDR
+	 */
+	status = regulator_set_min_voltage(supply.vdd);
+	if (status != 0) {
+		return status;
+	}
+
+	status = regulator_enable(supply.vdd);
+	if (status != 0) {
+		return status;
+	}
+
+	status = regulator_enable(supply.vref);
+	if (status != 0) {
+		return status;
+	}
+
+	return regulator_enable(supply.vtt);
+}
+#endif /* STM32MP_DDR3_TYPE */
+
 #if STM32MP_DDR4_TYPE
 struct ddr4_supply {
 	struct rdev *vdd;
@@ -150,7 +197,9 @@ int stm32mp_board_ddr_power_init(enum ddr_type ddr_type)
 
 	VERBOSE("DDR power init, ddr_type = %u\n", ddr_type);
 
-#if STM32MP_DDR4_TYPE
+#if STM32MP_DDR3_TYPE
+	assert(ddr_type == STM32MP_DDR3);
+#elif STM32MP_DDR4_TYPE
 	assert(ddr_type == STM32MP_DDR4);
 #elif STM32MP_LPDDR4_TYPE
 	assert(ddr_type == STM32MP_LPDDR4);
