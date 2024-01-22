@@ -93,7 +93,6 @@ static int ddr_power_init(void *fdt, int node)
 	/*
 	 * DDR4 power on sequence is:
 	 * enable VPP_DDR
-	 * wait 2ms
 	 * enable VREF_DDR, VTT_DDR, VPP_DDR
 	 */
 	status = regulator_set_min_voltage(supply.vpp);
@@ -110,8 +109,6 @@ static int ddr_power_init(void *fdt, int node)
 	if (status != 0) {
 		return status;
 	}
-
-	udelay(1000);
 
 	status = regulator_enable(supply.vdd);
 	if (status != 0) {
@@ -154,7 +151,6 @@ static int ddr_power_init(void *fdt, int node)
 	/*
 	 * LPDDR4 power on sequence is:
 	 * enable VDD1_DDR
-	 * wait 2ms
 	 * enable VDD2_DDR
 	 * enable VDDQ_DDR
 	 */
@@ -177,9 +173,6 @@ static int ddr_power_init(void *fdt, int node)
 	if (status != 0) {
 		return status;
 	}
-
-	/* could be set via enable_ramp_delay on vdd1_ddr */
-	udelay(2000);
 
 	status = regulator_enable(supply.vdd2);
 	if (status != 0) {
