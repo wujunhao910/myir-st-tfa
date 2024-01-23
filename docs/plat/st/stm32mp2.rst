@@ -85,7 +85,8 @@ To compile the correct DDR driver, one flag must be set among:
 
 Boot with FIP
 ~~~~~~~~~~~~~
-You need to build BL2, BL31, BL32 (OP-TEE) and BL33 (U-Boot) before building FIP binary.
+You need to build BL2, BL31, BL32 (OP-TEE) and BL33 (U-Boot) and retrieve
+DDR PHY firmware before building FIP binary.
 
 U-Boot
 ______
@@ -105,6 +106,21 @@ ______
     make CROSS_COMPILE64=aarch64-none-elf- CROSS_COMPILE32=arm-none-eabi-
         ARCH=arm PLATFORM=stm32mp2 \
         CFG_EMBED_DTB_SOURCE_FILE=stm32mp257f-ev1.dts
+
+DDR PHY firmware
+________________
+DDR PHY firmware files may not be delivered inside TF-A repository, especially
+if you build directly from trustedfirmware.org repository. It then needs to be
+retrieved from `STMicroelectronics DDR PHY github`_.
+
+You can either clone the repository to the default directory:
+
+.. code:: bash
+
+    git clone https://github.com/STMicroelectronics/stm32-ddr-phy-binary.git drivers/st/ddr/phy/firmware/bin
+
+Or clone it somewhere else, and add ``STM32MP_DDR_FW_PATH=`` in your make command
+line when building FIP.
 
 TF-A BL2
 ________
@@ -158,7 +174,7 @@ __________________
         --soc-fw build/stm32mp2/release/bl31.bin \
         --soc-fw-cert build/stm32mp2/release/soc_fw_content.crt \
         --soc-fw-key-cert build/stm32mp2/release/soc_fw_key.crt \
-        --ddr-fw drivers/st/ddr/phy/firmware/bin/ddr4_pmu_train.bin
+        --ddr-fw drivers/st/ddr/phy/firmware/bin/stm32mp2/ddr4_pmu_train.bin
 
     tools/fiptool/fiptool create \
         --tos-fw <optee_directory>/tee-header_v2.bin \
@@ -172,7 +188,7 @@ __________________
         --nt-fw-cert build/stm32mp2/release/nt_fw_content.crt \
         --nt-fw-key-cert build/stm32mp2/release/nt_fw_key.crt \
         --stm32mp-cfg-cert build/stm32mp2/release/stm32mp_cfg_cert.crt \
-        --ddr-fw drivers/st/ddr/phy/firmware/bin/ddr4_pmu_train.bin \
+        --ddr-fw drivers/st/ddr/phy/firmware/bin/stm32mp2/ddr4_pmu_train.bin \
         --trusted-key-cert build/stm32mp2/release/trusted_key.crt \
         --soc-fw-cert build/stm32mp2/release/soc_fw_content.crt \
         --soc-fw-key-cert build/stm32mp2/release/soc_fw_key.crt \
@@ -180,3 +196,6 @@ __________________
         build/stm32mp2/release/fip.bin
 
 .. _Github STM32 MPUs: https://github.com/STMicroelectronics/arm-trusted-firmware/tree/HEAD/docs/plat/st/stm32mpus.rst
+.. _STMicroelectronics DDR PHY github: https://github.com/STMicroelectronics/stm32-ddr-phy-binary
+
+*Copyright (c) 2023-2024, STMicroelectronics - All Rights Reserved*
