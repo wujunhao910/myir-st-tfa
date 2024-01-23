@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2023, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2015-2024, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -24,6 +24,9 @@
 #include <drivers/st/stm32_mce.h>
 #endif
 #include <drivers/st/stm32_rng.h>
+#if STM32MP13
+#include <drivers/st/stm32_saes.h>
+#endif
 #include <drivers/st/stm32_uart.h>
 #include <drivers/st/stm32mp1_clk.h>
 #include <drivers/st/stm32mp1_pwr.h>
@@ -455,29 +458,57 @@ skip_console_init:
 }
 
 #if STM32MP13
+static int generate_mce_key_from_seed(uint8_t *mkey, uint8_t *seed, uint32_t seed_size){
+	int ret;
+	struct stm32_saes_context ctx;
+	uint8_t payload[MCE_KEY_SIZE_IN_BYTES] = {0U};
+
+	assert(seed_size <= MCE_KEY_SIZE_IN_BYTES);
+
+	ret = stm32_saes_driver_init();
+	if (ret != 0) {
+		return ret;
+	}
+
+	memcpy(payload, seed, seed_size); /* add seed in a block sized payload */
+
+	ret = stm32_saes_init(&ctx, false, STM32_SAES_MODE_ECB,
+			      STM32_SAES_KEY_DHU, NULL, MCE_KEY_SIZE_IN_BYTES, NULL, 0U);
+	if (ret != 0) {
+		return ret;
+	}
+
+	return stm32_saes_update(&ctx, true, payload, mkey, sizeof(payload));
+}
+
 static void prepare_encryption(void)
 {
 	uint8_t mkey[MCE_KEY_SIZE_IN_BYTES];
+	uint8_t seed[MCE_SEED_SIZE_IN_BYTES];
 
 	stm32_mce_init();
 
 #if STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER
-	if (stm32_rng_read(mkey, MCE_KEY_SIZE_IN_BYTES) != 0) {
+	if (stm32_rng_read(seed, MCE_SEED_SIZE_IN_BYTES) != 0) {
 		panic();
 	}
 #else /* STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER */
 	if (stm32mp_is_wakeup_from_standby()) {
-		stm32mp1_pm_get_mce_mkey_from_context(mkey);
+		stm32mp1_pm_get_mce_seed_from_context(seed);
 		stm32_mce_reload_configuration();
 	} else {
-		/* Generate MCE master key from RNG */
-		if (stm32_rng_read(mkey, MCE_KEY_SIZE_IN_BYTES) != 0) {
+		/* Generate MCE master key seed from RNG */
+		if (stm32_rng_read(seed, MCE_SEED_SIZE_IN_BYTES) != 0) {
 			panic();
 		}
 
-		stm32mp1_pm_save_mce_mkey_in_context(mkey);
+		stm32mp1_pm_save_mce_seed_in_context(seed);
 	}
 #endif /* STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER */
+
+	if (generate_mce_key_from_seed(mkey, seed, MCE_SEED_SIZE_IN_BYTES) != 0) {
+		panic();
+	}
 
 	if (stm32_mce_write_master_key(mkey) != 0) {
 		panic();

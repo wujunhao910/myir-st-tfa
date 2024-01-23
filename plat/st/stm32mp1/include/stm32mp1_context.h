@@ -19,8 +19,8 @@ bool stm32_pm_context_is_valid(void);
 void stm32_restore_ddr_training_area(void);
 uint32_t stm32_pm_get_optee_ep(void);
 #if STM32MP13
-void stm32mp1_pm_save_mce_mkey_in_context(uint8_t *data);
-void stm32mp1_pm_get_mce_mkey_from_context(uint8_t *data);
+void stm32mp1_pm_save_mce_seed_in_context(uint8_t *data);
+void stm32mp1_pm_get_mce_seed_from_context(uint8_t *data);
 void stm32mp1_pm_save_mce_region(uint32_t index, struct stm32_mce_region_s *config);
 void stm32mp1_pm_get_mce_region(uint32_t index, struct stm32_mce_region_s *config);
 #endif

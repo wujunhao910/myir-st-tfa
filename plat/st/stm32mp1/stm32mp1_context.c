@@ -64,7 +64,7 @@ struct backup_data_s {
 	uint32_t bl2_code_end;
 	uint32_t bl2_end;
 #if STM32MP13
-	uint8_t mce_mkey[MCE_KEY_SIZE_IN_BYTES];
+	uint8_t mce_seed[MCE_SEED_SIZE_IN_BYTES];
 	struct stm32_mce_region_s mce_regions[MCE_IP_MAX_REGION_NB];
 #endif
 };
@@ -199,7 +199,7 @@ void stm32_restore_ddr_training_area(void)
 }
 
 #if STM32MP13
-void stm32mp1_pm_save_mce_mkey_in_context(uint8_t *data)
+void stm32mp1_pm_save_mce_seed_in_context(uint8_t *data)
 {
 	struct backup_data_s *backup_data;
 
@@ -211,12 +211,12 @@ void stm32mp1_pm_save_mce_mkey_in_context(uint8_t *data)
 
 	clk_enable(BKPSRAM);
 
-	memcpy(backup_data->mce_mkey, data, MCE_KEY_SIZE_IN_BYTES);
+	memcpy(backup_data->mce_seed, data, MCE_SEED_SIZE_IN_BYTES);
 
 	clk_disable(BKPSRAM);
 }
 
-void stm32mp1_pm_get_mce_mkey_from_context(uint8_t *data)
+void stm32mp1_pm_get_mce_seed_from_context(uint8_t *data)
 {
 	struct backup_data_s *backup_data;
 
@@ -229,7 +229,7 @@ void stm32mp1_pm_get_mce_mkey_from_context(uint8_t *data)
 
 	clk_enable(BKPSRAM);
 
-	memcpy(data, backup_data->mce_mkey, MCE_KEY_SIZE_IN_BYTES);
+	memcpy(data, backup_data->mce_seed, MCE_SEED_SIZE_IN_BYTES);
 
 	clk_disable(BKPSRAM);
 }

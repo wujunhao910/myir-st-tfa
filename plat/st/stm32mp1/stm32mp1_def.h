@@ -611,6 +611,7 @@ enum ddr_type {
 #if STM32MP13
 #define MCE_BASE			U(0x58001000)
 #define MCE_KEY_SIZE_IN_BYTES		U(16)
+#define MCE_SEED_SIZE_IN_BYTES		U(4)
 #endif
 
 /*******************************************************************************
