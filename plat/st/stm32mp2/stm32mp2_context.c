@@ -19,14 +19,14 @@
 
 #define BACKUP_CTX_ADDR		STM32MP_BACKUP_RAM_BASE
 #define BACKUP_CTX_CLK		CK_BUS_BKPSRAM
-#define ENC_KEY_SIZE_IN_BYTES	RISAF_KEY_SIZE_IN_BYTES
+#define KEY_SEED_SIZE_IN_BYTES	RISAF_SEED_SIZE_IN_BYTES
 
 /* Magic used to indicated valid = ' ' 'M' 'P' '2' */
 #define CONTEXT_MAGIC			0x204D5032
 
 struct backup_data_s {
 	uint32_t magic;
-	uint8_t enc_mkey[ENC_KEY_SIZE_IN_BYTES];
+	uint8_t mkey_seed[KEY_SEED_SIZE_IN_BYTES];
 	psci_power_state_t standby_pwr_state;
 	cpu_context_t saved_cpu_s_context[PLATFORM_CORE_COUNT];
 	cpu_context_t saved_cpu_ns_context[PLATFORM_CORE_COUNT];
@@ -37,7 +37,7 @@ struct backup_data_s {
 #endif
 };
 
-void stm32mp_pm_save_enc_mkey_in_context(uint8_t *data)
+void stm32mp_pm_save_enc_mkey_seed_in_context(uint8_t *data)
 {
 	struct backup_data_s *backup_data;
 
@@ -45,12 +45,12 @@ void stm32mp_pm_save_enc_mkey_in_context(uint8_t *data)
 
 	clk_enable(BACKUP_CTX_CLK);
 
-	memcpy(backup_data->enc_mkey, data, ENC_KEY_SIZE_IN_BYTES);
+	memcpy(backup_data->mkey_seed, data, KEY_SEED_SIZE_IN_BYTES);
 
 	clk_disable(BACKUP_CTX_CLK);
 }
 
-void stm32mp_pm_get_enc_mkey_from_context(uint8_t *data)
+void stm32mp_pm_get_enc_mkey_seed_from_context(uint8_t *data)
 {
 	struct backup_data_s *backup_data;
 
@@ -58,7 +58,7 @@ void stm32mp_pm_get_enc_mkey_from_context(uint8_t *data)
 
 	clk_enable(BACKUP_CTX_CLK);
 
-	memcpy(data, backup_data->enc_mkey, ENC_KEY_SIZE_IN_BYTES);
+	memcpy(data, backup_data->mkey_seed, KEY_SEED_SIZE_IN_BYTES);
 
 	clk_disable(BACKUP_CTX_CLK);
 }

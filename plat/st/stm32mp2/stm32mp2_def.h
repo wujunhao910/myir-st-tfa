@@ -524,6 +524,7 @@ enum ddr_type {
 					RISAF4_MAX_REGION + RISAF5_MAX_REGION)
 
 #define RISAF_KEY_SIZE_IN_BYTES		U(16)
+#define RISAF_SEED_SIZE_IN_BYTES	U(4)
 
 /*******************************************************************************
  * RIFSC IDs

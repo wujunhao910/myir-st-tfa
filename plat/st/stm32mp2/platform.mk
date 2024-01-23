@@ -203,7 +203,8 @@ PLAT_BL_COMMON_SOURCES	+=	drivers/st/iwdg/stm32_iwdg.c				\
 
 PLAT_BL_COMMON_SOURCES	+=	drivers/st/clk/clk-stm32-core.c				\
 				drivers/st/clk/stm32mp2_clk.c				\
-				drivers/st/crypto/stm32_rng.c
+				drivers/st/crypto/stm32_rng.c				\
+				drivers/st/crypto/stm32_saes.c
 
 PLAT_BL_COMMON_SOURCES  +=	drivers/st/nvmem/stm32mp_tamp_nvram_mp2.c
 
@@ -223,7 +224,6 @@ endif
 
 ifeq (${TRUSTED_BOARD_BOOT},1)
 BL2_SOURCES		+=	drivers/st/crypto/stm32_pka.c
-BL2_SOURCES		+=	drivers/st/crypto/stm32_saes.c
 endif
 
 ifneq ($(filter 1,${STM32MP_EMMC} ${STM32MP_SDMMC}),)

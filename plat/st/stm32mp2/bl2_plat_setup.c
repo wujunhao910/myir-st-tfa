@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024, STMicroelectronics - All Rights Reserved
+ * Copyright (c) 2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -22,6 +22,7 @@
 #include <drivers/st/stm32_iwdg.h>
 #include <drivers/st/stm32_rifsc.h>
 #include <drivers/st/stm32_rng.h>
+#include <drivers/st/stm32_saes.h>
 #include <drivers/st/stm32mp_pmic2.h>
 #include <drivers/st/stm32mp_reset.h>
 #include <drivers/st/stm32mp_rifsc_regs.h>
@@ -434,33 +435,63 @@ skip_console_init:
 	stm32mp_io_setup();
 }
 
+#if STM32MP_M33_TDCID
+static inline void prepare_encryption(void) {}
+#else /* !STM32MP_M33_TDCID */
+static int generate_enc_mkey_from_seed(uint8_t *mkey, uint8_t *seed, uint32_t seed_size){
+	int ret;
+	struct stm32_saes_context ctx;
+	uint8_t payload[RISAF_KEY_SIZE_IN_BYTES] = {0U};
+
+	assert(seed_size <= RISAF_KEY_SIZE_IN_BYTES);
+
+	ret = stm32_saes_driver_init();
+	if (ret != 0) {
+		return ret;
+	}
+
+	memcpy(payload, seed, seed_size); /* add seed in a block sized payload */
+
+	ret = stm32_saes_init(&ctx, false, STM32_SAES_MODE_ECB,
+			      STM32_SAES_KEY_DHU, NULL, RISAF_KEY_SIZE_IN_BYTES, NULL, 0U);
+	if (ret != 0) {
+		return ret;
+	}
+
+	return stm32_saes_update(&ctx, true, payload, mkey, sizeof(payload));
+}
+
 static void prepare_encryption(void)
 {
-#if !STM32MP_M33_TDCID
 	uint8_t mkey[RISAF_KEY_SIZE_IN_BYTES];
+	uint8_t seed[RISAF_SEED_SIZE_IN_BYTES];
 
 #if STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER
-	if (stm32_rng_read(mkey, RISAF_KEY_SIZE_IN_BYTES) != 0) {
+	if (stm32_rng_read(seed, RISAF_SEED_SIZE_IN_BYTES) != 0) {
 		panic();
 	}
 #else /* STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER */
 	if (stm32mp_is_wakeup_from_standby()) {
-		stm32mp_pm_get_enc_mkey_from_context(mkey);
+		stm32mp_pm_get_enc_mkey_seed_from_context(seed);
 	} else {
 		/* Generate RISAF master key from RNG */
-		if (stm32_rng_read(mkey, RISAF_KEY_SIZE_IN_BYTES) != 0) {
+		if (stm32_rng_read(seed, RISAF_SEED_SIZE_IN_BYTES) != 0) {
 			panic();
 		}
 
-		stm32mp_pm_save_enc_mkey_in_context(mkey);
+		stm32mp_pm_save_enc_mkey_seed_in_context(seed);
 	}
 #endif /* STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER */
+
+	if (generate_enc_mkey_from_seed(mkey, seed, RISAF_SEED_SIZE_IN_BYTES) != 0) {
+		panic();
+	}
 
 	if (stm32mp2_risaf_write_master_key(RISAF4_INST, mkey) != 0) {
 		panic();
 	}
-#endif
 }
+#endif /* STM32MP_M33_TDCID */
 
 /*******************************************************************************
  * This function can be used by the platforms to update/use image
