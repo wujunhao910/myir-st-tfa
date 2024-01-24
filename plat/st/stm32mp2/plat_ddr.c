@@ -72,8 +72,7 @@ static int pmic_ddr_power_init(enum ddr_type ddr_type)
 		return status;
 	}
 
-	/* could be set via enable_ramp_delay on vpp_ddr */
-	udelay(2000);
+	udelay(1000);
 
 	status = regulator_enable(vdd_ddr);
 	if (status != 0) {
@@ -89,6 +88,9 @@ static int pmic_ddr_power_init(enum ddr_type ddr_type)
 	if (status != 0) {
 		return status;
 	}
+
+	udelay(1000);
+
 #elif STM32MP_LPDDR4_TYPE
 	int status;
 	struct rdev *vdd1_ddr, *vdd2_ddr;
