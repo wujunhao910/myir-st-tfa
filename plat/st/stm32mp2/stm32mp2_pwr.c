@@ -18,8 +18,6 @@
 struct pwr_regu {
 	const char *node_name;
 	uint32_t enable_reg;
-	uint32_t enable_mask;
-	uint32_t ready_mask;
 	uint32_t valid_mask;
 	uint32_t vrsel_mask;
 	int comp_idx;
@@ -39,8 +37,6 @@ static const struct pwr_regu pwr_regulators[] = {
 	 [IOD_VDDIO1] = {
 		.node_name = "vddio1",
 		.enable_reg = PWR_CR8,
-		.enable_mask = PWR_CR8_VDDIO1VMEN,
-		.ready_mask = PWR_CR8_VDDIO1RDY,
 		.valid_mask = PWR_CR8_VDDIO1SV,
 		.vrsel_mask = PWR_CR8_VDDIO1VRSEL,
 		.comp_idx = SYSFG_VDDIO1_ID,
@@ -49,8 +45,6 @@ static const struct pwr_regu pwr_regulators[] = {
 	 [IOD_VDDIO2] = {
 		.node_name = "vddio2",
 		.enable_reg = PWR_CR7,
-		.enable_mask = PWR_CR7_VDDIO2VMEN,
-		.ready_mask = PWR_CR7_VDDIO2RDY,
 		.valid_mask = PWR_CR7_VDDIO2SV,
 		.vrsel_mask = PWR_CR7_VDDIO2VRSEL,
 		.comp_idx = SYSFG_VDDIO2_ID,
@@ -59,8 +53,6 @@ static const struct pwr_regu pwr_regulators[] = {
 	 [IOD_VDDIO3] = {
 		.node_name = "vddio3",
 		.enable_reg = PWR_CR1,
-		.enable_mask = PWR_CR1_VDDIO3VMEN,
-		.ready_mask = PWR_CR1_VDDIO3RDY,
 		.valid_mask = PWR_CR1_VDDIO3SV,
 		.vrsel_mask = PWR_CR1_VDDIO3VRSEL,
 		.comp_idx = SYSFG_VDDIO3_ID,
@@ -69,8 +61,6 @@ static const struct pwr_regu pwr_regulators[] = {
 	 [IOD_VDDIO4] = {
 		.node_name = "vddio4",
 		.enable_reg = PWR_CR1,
-		.enable_mask = PWR_CR1_VDDIO4VMEN,
-		.ready_mask = PWR_CR1_VDDIO4RDY,
 		.valid_mask = PWR_CR1_VDDIO4SV,
 		.vrsel_mask = PWR_CR1_VDDIO4VRSEL,
 		.comp_idx = SYSFG_VDDIO4_ID,
