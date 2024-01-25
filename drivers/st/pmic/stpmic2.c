@@ -28,13 +28,10 @@ struct regul_struct {
 	uint8_t volt_shift;
 	uint8_t en_cr;
 	uint8_t alt_en_cr;
-	uint8_t alt_volt_cr;
-	uint8_t pwrctrl_cr;
 	uint8_t msrt_reg;
 	uint8_t msrt_mask;
 	uint8_t pd_reg;
 	uint8_t pd_val;
-	uint8_t pd_mask;
 	uint8_t ocp_reg;
 	uint8_t ocp_mask;
 };
@@ -98,13 +95,10 @@ static const uint16_t refddr_volt_table[] = {
 	.en_cr			= ID ## _MAIN_CR2, \
 	.volt_cr		= ID ## _MAIN_CR1, \
 	.alt_en_cr		= ID ## _ALT_CR2, \
-	.alt_volt_cr		= ID ## _ALT_CR1, \
-	.pwrctrl_cr		= ID ## _PWRCTRL_CR, \
 	.msrt_reg		= BUCKS_MRST_CR, \
 	.msrt_mask		= ID ## _MRST, \
 	.pd_reg			= pd, \
 	.pd_val			= ID ## _PD_FAST, \
-	.pd_mask		= ID ## _PD_MASK, \
 	.ocp_reg		= FS_OCP_CR1, \
 	.ocp_mask		= FS_OCP_ ## ID, \
 }
@@ -117,13 +111,10 @@ static const uint16_t refddr_volt_table[] = {
 	.en_cr			= ID ## _MAIN_CR, \
 	.volt_cr		= ID ## _MAIN_CR, \
 	.alt_en_cr		= ID ## _ALT_CR, \
-	.alt_volt_cr		= ID ## _ALT_CR, \
-	.pwrctrl_cr		= ID ## _PWRCTRL_CR, \
 	.msrt_reg		= LDOS_MRST_CR, \
 	.msrt_mask		= ID ## _MRST, \
 	.pd_reg			= LDOS_PD_CR1, \
 	.pd_val			= ID ## _PD, \
-	.pd_mask		= ID ## _PD, \
 	.ocp_reg		= FS_OCP_CR2, \
 	.ocp_mask		= FS_OCP_ ## ID, \
 }
@@ -135,13 +126,10 @@ static const uint16_t refddr_volt_table[] = {
 	.en_cr			= ID ## _MAIN_CR, \
 	.volt_cr		= ID ## _MAIN_CR, \
 	.alt_en_cr		= ID ## _ALT_CR, \
-	.alt_volt_cr		= ID ## _ALT_CR, \
-	.pwrctrl_cr		= ID ## _PWRCTRL_CR, \
 	.msrt_reg		= BUCKS_MRST_CR, \
 	.msrt_mask		= ID ## _MRST, \
 	.pd_reg			= LDOS_PD_CR2, \
 	.pd_val			= ID ## _PD, \
-	.pd_mask		= ID ## _PD, \
 	.ocp_reg		= FS_OCP_CR1, \
 	.ocp_mask		= FS_OCP_ ## ID, \
 }
