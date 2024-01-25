@@ -442,6 +442,14 @@ static int register_pmic2(void)
 				regul->bypass_mv);
 		}
 
+		if (fdt_getprop(fdt, subnode, "st,mask-reset", NULL)  != NULL) {
+			VERBOSE("%s: set mask-reset\n", desc->node_name);
+			ret = pmic2_set_flag(desc, REGUL_MASK_RESET);
+			if (ret != 0) {
+				ERROR("set mask-reset failed\n");
+				return ret;
+			}
+		}
 	}
 
 	return 0;
