@@ -9,7 +9,7 @@
 #
 VERSION_MAJOR			:= 2
 VERSION_MINOR			:= 8
-VERSION_PATCH			:= 6
+VERSION_PATCH			:= 15
 VERSION				:= ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
 
 # Default goal is build all images
@@ -41,10 +41,6 @@ PLAT				:= ${DEFAULT_PLAT}
 
 CHECKCODE_ARGS		:=	--no-patch
 # Do not check the coding style on imported library files or documentation files
-INC_ARM_DIRS_TO_CHECK	:=	$(sort $(filter-out                     \
-					include/drivers/arm/cryptocell,	\
-					$(wildcard include/drivers/arm/*)))
-INC_ARM_DIRS_TO_CHECK	+=	include/drivers/arm/cryptocell/*.h
 INC_DRV_DIRS_TO_CHECK	:=	$(sort $(filter-out			\
 					include/drivers/arm,		\
 					$(wildcard include/drivers/*)))
@@ -417,6 +413,14 @@ ifeq ($(findstring clang,$(notdir $(CC))),)
 WARNINGS	+=		-Wunused-but-set-variable -Wmaybe-uninitialized	\
 				-Wpacked-bitfield-compat -Wshift-overflow=2 \
 				-Wlogical-op
+
+# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105523
+TF_CFLAGS		+= 	$(call cc_option, --param=min-pagesize=0)
+
+ifeq ($(HARDEN_SLS), 1)
+        TF_CFLAGS_aarch64       +=      $(call cc_option, -mharden-sls=all)
+endif
+
 else
 # using clang
 WARNINGS	+=		-Wshift-overflow -Wshift-sign-overflow \
@@ -668,16 +672,23 @@ endif
 	BL32_LDFLAGS	+=	$(PIE_LDFLAGS)
 endif
 
-ifeq (${ARCH},aarch64)
+BL1_CPPFLAGS  += -DREPORT_ERRATA=${DEBUG}
+BL31_CPPFLAGS += -DREPORT_ERRATA=${DEBUG}
+BL32_CPPFLAGS += -DREPORT_ERRATA=${DEBUG}
+
 BL1_CPPFLAGS += -DIMAGE_AT_EL3
 ifeq ($(BL2_AT_EL3),1)
 BL2_CPPFLAGS += -DIMAGE_AT_EL3
 else
 BL2_CPPFLAGS += -DIMAGE_AT_EL1
 endif
+
+ifeq (${ARCH},aarch64)
 BL2U_CPPFLAGS += -DIMAGE_AT_EL1
 BL31_CPPFLAGS += -DIMAGE_AT_EL3
 BL32_CPPFLAGS += -DIMAGE_AT_EL1
+else
+BL32_CPPFLAGS += -DIMAGE_AT_EL3
 endif
 
 # Include the CPU specific operations makefile, which provides default
@@ -1078,6 +1089,7 @@ $(eval $(call assert_booleans,\
         GENERATE_COT \
         GICV2_G0_FOR_EL3 \
         HANDLE_EA_EL3_FIRST_NS \
+	HARDEN_SLS \
         HW_ASSISTED_COHERENCY \
         INVERTED_MEMMAP \
         MEASURED_BOOT \
@@ -1124,6 +1136,8 @@ $(eval $(call assert_booleans,\
         SIMICS_BUILD \
         FEATURE_DETECTION \
 	TRNG_SUPPORT \
+	ERRATA_ABI_SUPPORT \
+	ERRATA_NON_ARM_INTERCONNECT \
 	CONDITIONAL_CMO \
 )))
 
@@ -1244,6 +1258,8 @@ $(eval $(call add_defines,\
         TRUSTED_BOARD_BOOT \
         CRYPTO_SUPPORT \
         TRNG_SUPPORT \
+        ERRATA_ABI_SUPPORT \
+	ERRATA_NON_ARM_INTERCONNECT \
         USE_COHERENT_MEM \
         USE_DEBUGFS \
         ARM_IO_IN_DTB \
