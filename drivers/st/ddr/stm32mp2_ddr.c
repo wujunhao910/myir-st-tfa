@@ -365,18 +365,16 @@ void stm32mp2_ddr_init(struct stm32mp_ddr_priv *priv,
 {
 	int ret = -EINVAL;
 	uint32_t ddr_retdis;
+	enum ddr_type ddr_type;
 
 	if ((config->c_reg.mstr & DDRCTRL_MSTR_DDR3) != 0U) {
-		ret = stm32mp_board_ddr_power_init(STM32MP_DDR3);
+		ddr_type = STM32MP_DDR3;
 	} else if ((config->c_reg.mstr & DDRCTRL_MSTR_DDR4) != 0U) {
-		ret = stm32mp_board_ddr_power_init(STM32MP_DDR4);
+		ddr_type = STM32MP_DDR4;
 	} else if ((config->c_reg.mstr & DDRCTRL_MSTR_LPDDR4) != 0U) {
-		ret = stm32mp_board_ddr_power_init(STM32MP_LPDDR4);
+		ddr_type = STM32MP_LPDDR4;
 	} else {
 		ERROR("DDR type not supported\n");
-	}
-
-	if (ret != 0) {
 		panic();
 	}
 
@@ -409,6 +407,11 @@ void stm32mp2_ddr_init(struct stm32mp_ddr_priv *priv,
 		udelay(DDR_DELAY_1US);
 
 	} else {
+		if (stm32mp_board_ddr_power_init(ddr_type) != 0) {
+			ERROR("DDR power init failed\n");
+			panic();
+		}
+
 		VERBOSE("disable DDR PHY retention\n");
 		mmio_setbits_32(priv->pwr + PWR_CR11, PWR_CR11_DDRRETDIS);
 
