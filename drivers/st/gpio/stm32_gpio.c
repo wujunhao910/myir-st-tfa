@@ -286,7 +286,7 @@ static void set_gpio(uint32_t bank, uint32_t pin, uint32_t mode, uint32_t type,
 
 #if STM32MP25
 	set_gpio_secure_cfg(bank, pin, true);
-#endif
+#else
 
 	if (status == DT_SECURE) {
 		stm32mp_register_secure_gpio(bank, pin);
@@ -300,6 +300,7 @@ static void set_gpio(uint32_t bank, uint32_t pin, uint32_t mode, uint32_t type,
 		set_gpio_secure_cfg(bank, pin, false);
 #endif
 	}
+#endif
 }
 
 void set_gpio_secure_cfg(uint32_t bank, uint32_t pin, bool secure)
