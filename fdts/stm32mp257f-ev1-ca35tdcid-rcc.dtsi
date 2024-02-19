@@ -59,7 +59,7 @@
 		MUX_CFG(MUX_USB2PHY2, MUX_USB2PHY2_FLEX58)
 	>;
 
-	pll1: st,pll@0 {
+	pll1: st,pll-1 {
 		st,pll = <&pll1_cfg_1200Mhz>;
 
 		pll1_cfg_1200Mhz: pll1-cfg-1200Mhz {
@@ -69,7 +69,7 @@
 	};
 
 	/* DRAM clock = 2 * PLL2 clock */
-	pll2: st,pll@1 {
+	pll2: st,pll-2 {
 		st,pll = <&pll2_cfg_600Mhz>;
 
 		pll2_cfg_600Mhz: pll2-cfg-600Mhz {
@@ -78,7 +78,7 @@
 		};
 	};
 
-	pll4: st,pll@3 {
+	pll4: st,pll-4 {
 		st,pll = <&pll4_cfg_1200Mhz>;
 
 		pll4_cfg_1200Mhz: pll4-cfg-1200Mhz {
@@ -87,7 +87,7 @@
 		};
 	};
 
-	pll5: st,pll@4 {
+	pll5: st,pll-5 {
 		st,pll = <&pll5_cfg_532Mhz>;
 
 		pll5_cfg_532Mhz: pll5-cfg-532Mhz {
