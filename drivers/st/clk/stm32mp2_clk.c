@@ -2243,7 +2243,7 @@ static int stm32_clk_parse_fdt_all_pll(void *fdt, int node, struct stm32_clk_pla
 		int subnode = 0;
 		int err = 0;
 
-		snprintf(name, sizeof(name), "st,pll@%u", i);
+		snprintf(name, sizeof(name), "st,pll-%u", i + 1);
 
 		subnode = fdt_subnode_offset(fdt, node, name);
 		if (!fdt_check_node(subnode)) {
