@@ -446,15 +446,15 @@ uint32_t stm32_iwdg_get_otp_config(uint32_t iwdg_inst)
 		panic();
 	}
 
-	if ((otp_value & BIT(iwdg_inst + HCONF1_OTP_IWDG_HW_POS)) != 0U) {
+	if ((otp_value & HCONF1_OTP_IWDG_HW_MASK(iwdg_inst)) != 0U) {
 		iwdg_cfg |= IWDG_HW_ENABLED;
 	}
 
-	if ((otp_value & BIT(iwdg_inst + HCONF1_OTP_IWDG_FZ_STOP_POS)) != 0U) {
+	if ((otp_value & HCONF1_OTP_IWDG_FZ_STOP_MASK(iwdg_inst)) != 0U) {
 		iwdg_cfg |= IWDG_DISABLE_ON_STOP;
 	}
 
-	if ((otp_value & BIT(iwdg_inst + HCONF1_OTP_IWDG_FZ_STANDBY_POS)) != 0U) {
+	if ((otp_value & HCONF1_OTP_IWDG_FZ_STANDBY_MASK(iwdg_inst)) != 0U) {
 		iwdg_cfg |= IWDG_DISABLE_ON_STANDBY;
 	}
 
