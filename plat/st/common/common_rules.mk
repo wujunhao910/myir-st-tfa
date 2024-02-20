@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2022-2023, ARM Limited and Contributors. All rights reserved.
+# Copyright (c) 2022-2024, Arm Limited and Contributors. All rights reserved.
 #
 # SPDX-License-Identifier: BSD-3-Clause
 #
@@ -78,3 +78,8 @@ tf-a-%.stm32: tf-a-%.bin ${STM32_DEPS}
 		-n ${STM32_HEADER_VERSION_MINOR} \
 		-b ${STM32_HEADER_BL2_BINARY_TYPE}
 	@echo
+
+ifeq (${PSA_FWU_SUPPORT},1)
+.PHONY: metadata
+metadata: ${BUILD_PLAT}/metadata.bin
+endif
