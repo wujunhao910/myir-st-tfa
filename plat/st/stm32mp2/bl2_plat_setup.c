@@ -54,6 +54,7 @@ IMPORT_SYM(uintptr_t, __DATA_END__, DATA_END);
 
 static void iac_dump(void)
 {
+#if !STM32MP_M33_TDCID
 #if DEBUG
 	unsigned int i;
 	unsigned int bit;
@@ -78,6 +79,7 @@ static void iac_dump(void)
 			bit++;
 		}
 	}
+#endif
 #endif
 }
 
