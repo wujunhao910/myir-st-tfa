@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, ARM Limited and Contributors. All rights reserved.
+ * Copyright (c) 2023-2024, ARM Limited and Contributors. All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -54,9 +54,9 @@ void stm32mp_pm_get_enc_mkey_seed_from_context(uint8_t *data)
 {
 	struct backup_data_s *backup_data;
 
-	backup_data = (struct backup_data_s *)BACKUP_CTX_ADDR;
-
 	clk_enable(BACKUP_CTX_CLK);
+
+	backup_data = (struct backup_data_s *)BACKUP_CTX_ADDR;
 
 	memcpy(data, backup_data->mkey_seed, KEY_SEED_SIZE_IN_BYTES);
 
@@ -68,11 +68,12 @@ bool stm32_pm_context_is_valid(void)
 	struct backup_data_s *backup_data;
 	bool ret;
 
-	backup_data = (struct backup_data_s *)BACKUP_CTX_ADDR;
-
 	clk_enable(BACKUP_CTX_CLK);
 
+	backup_data = (struct backup_data_s *)BACKUP_CTX_ADDR;
+
 	ret = (backup_data->magic == CONTEXT_MAGIC);
+
 	clk_disable(BACKUP_CTX_CLK);
 
 	return ret;
