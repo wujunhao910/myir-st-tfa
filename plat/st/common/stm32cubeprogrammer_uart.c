@@ -647,6 +647,11 @@ int stm32cubeprog_uart_load(uintptr_t instance, uint8_t phase,
 			    uintptr_t base, size_t len)
 {
 	int ret;
+	static bool init_done;
+
+	if (init_done) {
+		goto skip_init;
+	}
 
 	if (stm32_uart_init(&handle.uart, instance, &init) != 0) {
 		return -EIO;
@@ -664,6 +669,10 @@ int stm32cubeprog_uart_load(uintptr_t instance, uint8_t phase,
 	if (ret != 0) {
 		return ret;
 	}
+
+	init_done = true;
+
+skip_init:
 
 	return uart_read(phase, base, len);
 }
