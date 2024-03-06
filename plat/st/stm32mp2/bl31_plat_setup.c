@@ -116,6 +116,7 @@ void bl31_plat_arch_setup(void)
 
 	stm32mp_gic_init();
 
+#if !STM32MP_UART_PROGRAMMER && !STM32MP_USB_PROGRAMMER
 	if (stm32mp_is_wakeup_from_standby()) {
 		/* Initialize the runtime services e.g. PSCI. */
 		runtime_svc_init();
@@ -129,6 +130,7 @@ void bl31_plat_arch_setup(void)
 		bl31_warm_entrypoint();
 		panic();
 	}
+#endif /* !STM32MP_UART_PROGRAMMER && !STM32MP_USB_PROGRAMMER */
 }
 
 void bl31_platform_setup(void)
@@ -158,3 +160,19 @@ entry_point_info_t *bl31_plat_get_next_image_ep_info(unsigned int type)
 
 	return NULL;
 }
+
+#if STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER
+/* Stub PSCI platform functions */
+plat_local_state_t plat_get_target_pwr_state(unsigned int lvl,
+					     const plat_local_state_t *states,
+					     unsigned int ncpu)
+{
+	return 0U;
+}
+
+int plat_setup_psci_ops(uintptr_t sec_entrypoint,
+			const plat_psci_ops_t **psci_ops)
+{
+	return 0;
+}
+#endif /* STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER */
