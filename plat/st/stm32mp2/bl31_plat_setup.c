@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, STMicroelectronics - All Rights Reserved
+ * Copyright (c) 2023-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -162,6 +162,8 @@ entry_point_info_t *bl31_plat_get_next_image_ep_info(unsigned int type)
 }
 
 #if STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER
+static const plat_psci_ops_t null_psci_ops;
+
 /* Stub PSCI platform functions */
 plat_local_state_t plat_get_target_pwr_state(unsigned int lvl,
 					     const plat_local_state_t *states,
@@ -173,6 +175,7 @@ plat_local_state_t plat_get_target_pwr_state(unsigned int lvl,
 int plat_setup_psci_ops(uintptr_t sec_entrypoint,
 			const plat_psci_ops_t **psci_ops)
 {
+	*psci_ops = &null_psci_ops;
 	return 0;
 }
 #endif /* STM32MP_UART_PROGRAMMER || STM32MP_USB_PROGRAMMER */
