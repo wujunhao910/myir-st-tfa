@@ -222,6 +222,35 @@ void bl2_platform_setup(void)
 #endif
 }
 
+static void handle_potential_tamper(uint32_t bit_off)
+{
+	/* Fixme: Add implementation specific logic here */
+	ERROR("Handling Potential tamper\n");
+	mmio_setbits_32(TAMP_BASE + TAMP_SCR, BIT_32(bit_off));
+}
+
+static void handle_confirmed_tamper(uint32_t bit_off __unused)
+{
+	/* Fixme: Add implementation specific logic here */
+	ERROR("Handling Confirmed tamper\n");
+	panic();
+}
+
+static bool lse_tamper_detection(void)
+{
+	if ((mmio_read_32(TAMP_BASE + TAMP_SR) & TAMP_SR_LSE_MONITORING) != 0U) {
+		mmio_clrbits_32(RCC_BASE + RCC_BDCR, RCC_BDCR_LSECSSON);
+		mmio_clrbits_32(RCC_BASE + RCC_BDCR, RCC_BDCR_LSEON);
+		if (mmio_read_32(RCC_BASE + RCC_C1CIFCLRR) & RCC_C1CIFCLRR_LSECSSF) {
+			mmio_clrbits_32(RCC_BASE + RCC_C1CIFCLRR, RCC_C1CIFCLRR_LSECSSF);
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 static void reset_backup_domain(void)
 {
 #if !STM32MP_M33_TDCID
@@ -239,7 +268,7 @@ static void reset_backup_domain(void)
 		;
 	}
 
-	/* Reset backup domain on cold boot cases */
+	/* Reset backup domain on cold boot cases or when LSE tamper occurred */
 	if ((mmio_read_32(rcc_base + RCC_BDCR) & RCC_BDCR_RTCCKEN) == 0U) {
 		mmio_setbits_32(rcc_base + RCC_BDCR, RCC_BDCR_VSWRST);
 
@@ -252,21 +281,47 @@ static void reset_backup_domain(void)
 #endif
 }
 
-static void stm32_tamp_check_tamper_event(void)
+static void check_tamper_event(bool lse_tamper_occured)
 {
-	uint32_t sr = mmio_read_32(TAMP_SR);
+	uint32_t sr = mmio_read_32(TAMP_BASE + TAMP_SR);
 
-	if (sr != 0U) {
+	if (sr == 0U) {
+		return;
+	}
+
+	ERROR("\n");
+	if (lse_tamper_occured) {
+		ERROR("** INTRUSION ALERT: LSE MONITORING TAMPER DETECTED **\n");
 		ERROR("\n");
+
+#if !STM32MP_M33_TDCID
+		/*
+		 * Fixme: Add logic to handle the LSE tamper here (e.g change RTC clock source
+		 * instead). This part is implementation specific.
+		 */
+		mmio_clrbits_32(RCC_BASE + RCC_BDCR, RCC_BDCR_RTCCKEN);
+		ERROR("** Rebooting... **\n");
+		stm32mp_system_reset();
+#endif
+	} else {
 		while (sr != 0U) {
 			unsigned int bit_off = __builtin_ctz(sr);
 			bool is_internal = bit_off >= TAMP_SR_INT_SHIFT;
+			uint32_t cr2 = mmio_read_32(TAMP_BASE + TAMP_CR2);
+			uint32_t cr3 = mmio_read_32(TAMP_BASE + TAMP_CR3);
 
 			ERROR("** INTRUSION ALERT: %s TAMPER %u DETECTED **\n",
 			      is_internal ? "INTERNAL" : "EXTERNAL",
 			      is_internal ? (bit_off - TAMP_SR_INT_SHIFT + 1U) : (bit_off + 1U));
 
-			sr &= ~BIT(bit_off);
+			if ((is_internal && ((cr3 & BIT_32(bit_off >> TAMP_SR_INT_SHIFT)) != 0U)) ||
+			    (!is_internal && ((cr2 & BIT_32(bit_off)) != 0U))) {
+				handle_potential_tamper(bit_off);
+			} else {
+				handle_confirmed_tamper(bit_off);
+			}
+
+			sr &= ~BIT_32(bit_off);
 		}
 		ERROR("\n");
 	}
@@ -281,6 +336,7 @@ void bl2_el3_plat_arch_setup(void)
 				(boot_context->boot_interface_selected ==
 				 BOOT_API_CTX_BOOT_INTERFACE_SEL_SERIAL_UART);
 	uintptr_t uart_prog_addr __unused;
+	bool lse_tamper_occured = false;
 
 	if (stm32_otp_probe() != 0) {
 		panic();
@@ -300,6 +356,8 @@ void bl2_el3_plat_arch_setup(void)
 	if (dt_open_and_check(STM32MP_DTB_BASE) < 0) {
 		panic();
 	}
+
+	lse_tamper_occured = lse_tamper_detection();
 
 	reset_backup_domain();
 
@@ -361,7 +419,7 @@ void bl2_el3_plat_arch_setup(void)
 	}
 
 skip_console_init:
-	stm32_tamp_check_tamper_event();
+	check_tamper_event(lse_tamper_occured);
 
 #if !TRUSTED_BOARD_BOOT
 	if (stm32mp_check_closed_device() == STM32MP_CHIP_SEC_CLOSED) {
