@@ -576,12 +576,10 @@ int bl2_plat_handle_pre_image_load(unsigned int image_id)
  */
 #if !PSA_FWU_SUPPORT
 			const partition_entry_t *entry;
-			const struct efi_guid img_type_guid = STM32MP_FIP_GUID;
-			uuid_t img_type_uuid;
+			const struct efi_guid fip_guid = STM32MP_FIP_GUID;
 
-			guidcpy(&img_type_uuid, &img_type_guid);
 			partition_init(GPT_IMAGE_ID);
-			entry = get_partition_entry_by_type(&img_type_uuid);
+			entry = get_partition_entry_by_type(&fip_guid);
 			if (entry == NULL) {
 				entry = get_partition_entry(FIP_IMAGE_NAME);
 				if (entry == NULL) {
@@ -823,12 +821,12 @@ uint32_t plat_fwu_get_boot_idx(void)
 	return boot_idx;
 }
 
-static void *stm32_get_image_spec(const uuid_t *img_type_uuid)
+static void *stm32_get_image_spec(const struct efi_guid *img_type_guid)
 {
 	unsigned int i;
 
 	for (i = 0U; i < MAX_NUMBER_IDS; i++) {
-		if ((guidcmp(&policies[i].img_type_guid, img_type_uuid)) == 0) {
+		if ((guidcmp(&policies[i].img_type_guid, img_type_guid)) == 0) {
 			return (void *)policies[i].image_spec;
 		}
 	}
@@ -841,29 +839,31 @@ void plat_fwu_set_images_source(const struct fwu_metadata *metadata)
 	unsigned int i;
 	uint32_t boot_idx;
 	const partition_entry_t *entry __maybe_unused;
-	const uuid_t *img_type_uuid;
-	const uuid_t *img_uuid __maybe_unused;
+	const struct fwu_image_entry *img_entry;
+	const void *img_type_guid;
+	const void *img_guid;
 	io_block_spec_t *image_spec;
 
 	boot_idx = plat_fwu_get_boot_idx();
 	assert(boot_idx < NR_OF_FW_BANKS);
 	VERBOSE("Selecting to boot from bank %u\n", boot_idx);
 
+	img_entry = (void *)&metadata->fw_desc.img_entry;
 	for (i = 0U; i < NR_OF_IMAGES_IN_FW_BANK; i++) {
-		img_type_uuid = &metadata->img_entry[i].img_type_uuid;
+		img_type_guid = &img_entry[i].img_type_guid;
 
-		img_uuid = &metadata->img_entry[i].img_props[boot_idx].img_uuid;
+		img_guid = &img_entry[i].img_bank_info[boot_idx].img_guid;
 
-		image_spec = stm32_get_image_spec(img_type_uuid);
+		image_spec = stm32_get_image_spec(img_type_guid);
 		if (image_spec == NULL) {
 			ERROR("Unable to get image spec for the image in the metadata\n");
 			panic();
 		}
 
 #if (STM32MP_SDMMC || STM32MP_EMMC)
-		entry = get_partition_entry_by_uuid(img_uuid);
+		entry = get_partition_entry_by_guid(img_guid);
 		if (entry == NULL) {
-			ERROR("Unable to find the partition with the uuid mentioned in metadata\n");
+			ERROR("No partition with the uuid mentioned in metadata\n");
 			panic();
 		}
 
@@ -871,9 +871,9 @@ void plat_fwu_set_images_source(const struct fwu_metadata *metadata)
 		image_spec->length = entry->length;
 #endif
 #if STM32MP_SPI_NOR
-		if (guidcmp(img_uuid, &STM32MP_NOR_FIP_A_GUID) == 0) {
+		if (guidcmp(img_guid, &STM32MP_NOR_FIP_A_GUID) == 0) {
 			image_spec->offset = STM32MP_NOR_FIP_A_OFFSET;
-		} else if (guidcmp(img_uuid, &STM32MP_NOR_FIP_B_GUID) == 0) {
+		} else if (guidcmp(img_guid, &STM32MP_NOR_FIP_B_GUID) == 0) {
 			image_spec->offset = STM32MP_NOR_FIP_B_OFFSET;
 		} else {
 			ERROR("Invalid uuid mentioned in metadata\n");
@@ -881,9 +881,9 @@ void plat_fwu_set_images_source(const struct fwu_metadata *metadata)
 		}
 #endif
 #if (STM32MP_SPI_NAND || STM32MP_RAW_NAND)
-		if (guidcmp(img_uuid, &STM32MP_NAND_FIP_A_GUID) == 0) {
+		if (guidcmp(img_guid, &STM32MP_NAND_FIP_A_GUID) == 0) {
 			image_spec->offset = STM32MP_NAND_FIP_A_OFFSET;
-		} else if (guidcmp(img_uuid, &STM32MP_NAND_FIP_B_GUID) == 0) {
+		} else if (guidcmp(img_guid, &STM32MP_NAND_FIP_B_GUID) == 0) {
 			image_spec->offset = STM32MP_NAND_FIP_B_OFFSET;
 		} else {
 			ERROR("Invalid uuid mentioned in metadata\n");
@@ -891,9 +891,9 @@ void plat_fwu_set_images_source(const struct fwu_metadata *metadata)
 		}
 #endif
 #if STM32MP_HYPERFLASH
-		if (guidcmp(img_uuid, &STM32MP_HYPERFLASH_FIP_A_GUID) == 0) {
+		if (guidcmp(img_guid, &STM32MP_HYPERFLASH_FIP_A_GUID) == 0) {
 			image_spec->offset = STM32MP_HYPERFLASH_FIP_A_OFFSET;
-		} else if (guidcmp(img_uuid, &STM32MP_HYPERFLASH_FIP_B_GUID) == 0) {
+		} else if (guidcmp(img_guid, &STM32MP_HYPERFLASH_FIP_B_GUID) == 0) {
 			image_spec->offset = STM32MP_HYPERFLASH_FIP_B_OFFSET;
 		} else {
 			ERROR("Invalid uuid mentioned in metadata\n");
