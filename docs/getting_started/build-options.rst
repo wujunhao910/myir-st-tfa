@@ -1200,6 +1200,16 @@ commands can be used:
 Firmware update options
 -----------------------
 
+-  ``PSA_FWU_SUPPORT``: Enable the firmware update mechanism as per the
+   `PSA FW update specification`_. The default value is 0.
+   PSA firmware update implementation has few limitations, such as:
+
+   -  BL2 is not part of the protocol-updatable images. If BL2 needs to
+      be updated, then it should be done through another platform-defined
+      mechanism.
+
+   -  It assumes the platform's hardware supports CRC32 instructions.
+
 -  ``NR_OF_FW_BANKS``: Define the number of firmware banks. This flag is used
    in defining the firmware update metadata structure. This flag is by default
    set to '2'.
@@ -1210,13 +1220,14 @@ Firmware update options
    This flag is used in defining the firmware update metadata structure. This
    flag is by default set to '1'.
 
--  ``PSA_FWU_SUPPORT``: Enable the firmware update mechanism as per the
-   `PSA FW update specification`_. The default value is 0, and this is an
-   experimental feature.
-   PSA firmware update implementation has some limitations, such as BL2 is
-   not part of the protocol-updatable images, if BL2 needs to be updated, then
-   it should be done through another platform-defined mechanism, and it assumes
-   that the platform's hardware supports CRC32 instructions.
+- ``PSA_FWU_METADATA_FW_STORE_DESC``: To be enabled when the FWU
+   metadata contains image description. The default value is 1.
+
+   The version 2 of the FWU metadata allows for an opaque metadata
+   structure where a platform can choose to not include the firmware
+   store description in the metadata structure. This option indicates
+   if the firmware store description, which provides information on
+   the updatable images is part of the structure.
 
 --------------
 
