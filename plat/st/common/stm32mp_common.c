@@ -640,5 +640,13 @@ void stm32_set_max_fwu_trial_boot_cnt(void)
 				(FWU_MAX_TRIAL_REBOOT << FWU_INFO_CNT_OFF) &
 					FWU_INFO_CNT_MSK);
 }
+
+void stm32_clear_fwu_trial_boot_cnt(void)
+{
+	struct nvmem_cell fwu_info_cell = {};
+
+	stm32_get_fwu_info_cell(&fwu_info_cell);
+	stm32_nvmem_cell_clrset(&fwu_info_cell, FWU_INFO_CNT_MSK, 0U);
+}
 #endif /* PSA_FWU_SUPPORT */
 #endif /* !STM32MP_SSP */
