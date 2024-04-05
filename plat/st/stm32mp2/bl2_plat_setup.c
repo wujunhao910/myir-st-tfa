@@ -240,7 +240,7 @@ static void reset_backup_domain(void)
 	}
 
 	/* Reset backup domain on cold boot cases */
-	if ((mmio_read_32(rcc_base + RCC_BDCR) & RCC_BDCR_RTCSRC_MASK) == 0U) {
+	if ((mmio_read_32(rcc_base + RCC_BDCR) & RCC_BDCR_RTCCKEN) == 0U) {
 		mmio_setbits_32(rcc_base + RCC_BDCR, RCC_BDCR_VSWRST);
 
 		while ((mmio_read_32(rcc_base + RCC_BDCR) & RCC_BDCR_VSWRST) == 0U) {
