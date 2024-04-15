@@ -358,6 +358,18 @@ static int stm32_pwr_domain_validate_suspend(const psci_power_state_t *target_st
 	return PSCI_E_SUCCESS;
 }
 
+/* Display Stop2 or Standby1 modes, when console is available */
+static void print_mode_info(const char *mode)
+{
+	INFO("Entering %s low power mode\n", mode);
+}
+
+/* Display Stop1 modes, at verbose level to avoid this trace with CPUIdle */
+static void print_mode_verbose(const char *mode)
+{
+	VERBOSE("Entering %s low power mode\n", mode);
+}
+
 static void stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 {
 	uintptr_t pwr_base = stm32mp_pwr_base();
@@ -398,14 +410,14 @@ static void stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 	/* Perform the PWR configuration for the requested mode */
 	switch (stateid) {
 	case PWRSTATE_STOP1:
-		VERBOSE("STOP1 enter\n");
+		print_mode_verbose("Stop1");
 		mmio_write_32(pwr_base + PWR_CPU1CR, 0U);
 		mmio_write_32(pwr_base + PWR_CPU2CR, 0U);
 		stm32mp2_enable_rcc_wakeup_irq(rcc_base);
 		break;
 
 	case PWRSTATE_LP_STOP1:
-		VERBOSE("LP_STOP1 enter\n");
+		print_mode_verbose("LP_Stop1");
 		mmio_write_32(pwr_base + PWR_CPU1CR, PWR_CPU1CR_LPDS_D1);
 		mmio_write_32(pwr_base + PWR_CPU2CR, PWR_CPU2CR_LPDS_D2);
 		/* Wait VTT ramp-up delay for LP-Stop1 */
@@ -414,14 +426,14 @@ static void stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 		break;
 
 	case PWRSTATE_LPLV_STOP1:
-		VERBOSE("LPLV_STOP1 enter\n");
+		print_mode_verbose("LPLV_Stop1");
 		mmio_write_32(pwr_base + PWR_CPU1CR, PWR_CPU1CR_LPDS_D1 | PWR_CPU1CR_LVDS_D1);
 		mmio_write_32(pwr_base + PWR_CPU2CR, PWR_CPU2CR_LPDS_D2 | PWR_CPU2CR_LVDS_D2);
 		stm32mp2_enable_rcc_wakeup_irq(rcc_base);
 		break;
 
 	case PWRSTATE_STOP2:
-		VERBOSE("STOP2 enter\n");
+		print_mode_info("Stop2");
 		mmio_write_32(pwr_base + PWR_CPU1CR, PWR_CPU1CR_PDDS_D1);
 		mmio_write_32(pwr_base + PWR_CPU2CR, 0U);
 		mmio_write_32(rcc_base + RCC_PWRLPDLYCR, stop2_pwrlpdly);
@@ -431,7 +443,7 @@ static void stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 		break;
 
 	case PWRSTATE_LP_STOP2:
-		VERBOSE("LP_STOP2 enter\n");
+		print_mode_info("LP_Stop2");
 		mmio_write_32(pwr_base + PWR_CPU1CR, PWR_CPU1CR_PDDS_D1);
 		mmio_write_32(pwr_base + PWR_CPU2CR, PWR_CPU2CR_LPDS_D2);
 		mmio_write_32(rcc_base + RCC_PWRLPDLYCR, stop2_pwrlpdly);
@@ -441,7 +453,7 @@ static void stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 		break;
 
 	case PWRSTATE_LPLV_STOP2:
-		VERBOSE("LPLV_STOP2 enter\n");
+		print_mode_info("LPLV_Stop2");
 		mmio_write_32(pwr_base + PWR_CPU1CR, PWR_CPU1CR_PDDS_D1);
 		mmio_write_32(pwr_base + PWR_CPU2CR, PWR_CPU2CR_LPDS_D2 | PWR_CPU2CR_LVDS_D2);
 		mmio_write_32(rcc_base + RCC_PWRLPDLYCR, stop2_pwrlpdly);
@@ -451,7 +463,7 @@ static void stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 		break;
 
 	case PWRSTATE_STANDBY:
-		VERBOSE("STANDBY enter\n");
+		print_mode_info("Standby1");
 		mmio_write_32(pwr_base + PWR_CPU1CR, PWR_CPU1CR_PDDS_D1 | PWR_CPU1CR_PDDS_D2);
 		mmio_write_32(pwr_base + PWR_CPU2CR, PWR_CPU2CR_PDDS_D2);
 
@@ -866,12 +878,15 @@ static void stm32_get_sys_suspend_power_state(psci_power_state_t *req_state)
 	/* Verify the max level supported according to the activated EXTI1 */
 	if ((c1imr1 & (EXTI1_C1IMR1_PVD | EXTI1_C1IMR1_PVM)) != 0U) {
 		max_pwr_state = PWRSTATE_LPLV_STOP2;
+		VERBOSE("%s: max_pwr_state = PWRSTATE_LPLV_STOP2 C1IMR1=%x\n", __func__, c1imr1);
 	}
 
 	/* Wake-up pin are connected directly to PWR */
 	if (((c1imr1 & ~(EXTI1_C1IMR1_PVD | EXTI1_C1IMR1_PVM)) != 0U) ||
 	    ((c1imr2 & ~EXTI1_C1IMR2_WKUP_MASK) != 0U) || (c1imr3 != 0U)) {
 		max_pwr_state = PWRSTATE_LP_STOP2;
+		VERBOSE("%s: max_pwr_state = PWRSTATE_LP_STOP2, C1IMR1=%x, C1IMR2=%x, C1IMR3=%x\n",
+			__func__, c1imr1, c1imr2, c1imr3);
 	}
 
 	/* Search the max supported POWERDOWN modes  <= max_pwr_state */
