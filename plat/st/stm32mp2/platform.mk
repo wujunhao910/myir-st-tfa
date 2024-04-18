@@ -201,7 +201,7 @@ PLAT_BL_COMMON_SOURCES	+=	drivers/st/iwdg/stm32_iwdg.c				\
 				plat/st/stm32mp2/stm32mp2_pwr.c
 
 PLAT_BL_COMMON_SOURCES	+=	drivers/st/clk/clk-stm32-core.c				\
-				drivers/st/clk/stm32mp2_clk.c				\
+				drivers/st/clk/clk-stm32mp2.c				\
 				drivers/st/crypto/stm32_rng.c				\
 				drivers/st/crypto/stm32_saes.c
 
