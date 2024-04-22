@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2023, STMicroelectronics - All Rights Reserved
+ * Copyright (c) 2021-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -18,7 +18,7 @@
 #include <platform_def.h>
 
 /* HW idle period (unit: Multiples of 32 DFI clock cycles) */
-#define HW_IDLE_PERIOD			0x3
+#define HW_IDLE_PERIOD			0x3U
 
 static enum stm32mp2_ddr_sr_mode saved_ddr_sr_mode;
 
@@ -79,7 +79,7 @@ static void disable_dfi_low_power_interface(struct stm32mp_ddrctl *ctl)
 			panic();
 		}
 	} while (((dfistat & DDRCTRL_DFISTAT_DFI_LP_ACK) != 0U) ||
-		((stat & DDRCTRL_STAT_OPERATING_MODE_MASK) == DDRCTRL_STAT_OPERATING_MODE_SR));
+		 ((stat & DDRCTRL_STAT_OPERATING_MODE_MASK) == DDRCTRL_STAT_OPERATING_MODE_SR));
 
 	VERBOSE("[0x%lx] dfistat = 0x%x\n", (uintptr_t)&ctl->dfistat, dfistat);
 	VERBOSE("[0x%lx] stat = 0x%x\n", (uintptr_t)&ctl->stat, stat);
@@ -122,13 +122,13 @@ void ddr_activate_controller(struct stm32mp_ddrctl *ctl, bool sr_entry)
 static void disable_phy_ddc(void)
 {
 	/* Enable APB access to internal CSR registers */
-	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_APBONLY0_MICROCONTMUXSEL, 0);
+	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_APBONLY0_MICROCONTMUXSEL, 0U);
 	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_DRTUB0_UCCLKHCLKENABLES,
 		      DDRPHY_DRTUB0_UCCLKHCLKENABLES_UCCLKEN |
 		      DDRPHY_DRTUB0_UCCLKHCLKENABLES_HCLKEN);
 
 	/* Disable DRAM drift compensation */
-	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_INITENG0_P0_SEQ0BDISABLEFLAG6, 0xFFFF);
+	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_INITENG0_P0_SEQ0BDISABLEFLAG6, 0xFFFFU);
 
 	/* Disable APB access to internal CSR registers */
 	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_DRTUB0_UCCLKHCLKENABLES,
@@ -144,7 +144,7 @@ void ddr_wait_lp3_mode(bool sr_entry)
 	bool repeat_loop = false;
 
 	/* Enable APB access to internal CSR registers */
-	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_APBONLY0_MICROCONTMUXSEL, 0);
+	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_APBONLY0_MICROCONTMUXSEL, 0U);
 	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_DRTUB0_UCCLKHCLKENABLES,
 		      DDRPHY_DRTUB0_UCCLKHCLKENABLES_UCCLKEN |
 		      DDRPHY_DRTUB0_UCCLKHCLKENABLES_HCLKEN);
@@ -161,17 +161,17 @@ void ddr_wait_lp3_mode(bool sr_entry)
 		if (sr_entry) {
 			repeat_loop = (phyinlpx & DDRPHY_INITENG0_P0_PHYINLPX_PHYINLP3) == 0U;
 		} else {
-			repeat_loop = ((phyinlpx & DDRPHY_INITENG0_P0_PHYINLPX_PHYINLP3) != 0U);
+			repeat_loop = (phyinlpx & DDRPHY_INITENG0_P0_PHYINLPX_PHYINLP3) != 0U;
 		}
 	} while (repeat_loop);
 
 	/* Disable APB access to internal CSR registers */
 #if STM32MP_DDR3_TYPE || STM32MP_DDR4_TYPE
-	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_DRTUB0_UCCLKHCLKENABLES, 0);
-#elif STM32MP_LPDDR4_TYPE
+	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_DRTUB0_UCCLKHCLKENABLES, 0U);
+#else /* STM32MP_LPDDR4_TYPE */
 	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_DRTUB0_UCCLKHCLKENABLES,
 		      DDRPHY_DRTUB0_UCCLKHCLKENABLES_HCLKEN);
-#endif /* STM32MP_LPDDR4_TYPE */
+#endif /* STM32MP_DDR3_TYPE || STM32MP_DDR4_TYPE */
 	mmio_write_32(stm32mp_ddrphyc_base() + DDRPHY_APBONLY0_MICROCONTMUXSEL,
 		      DDRPHY_APBONLY0_MICROCONTMUXSEL_MICROCONTMUXSEL);
 }
@@ -189,10 +189,10 @@ static int sr_loop(bool is_entry)
 	 */
 	do {
 		type = mmio_read_32(stm32mp_ddrctrl_base() + DDRCTRL_STAT) &
-				    DDRCTRL_STAT_SELFREF_TYPE_MASK;
+		       DDRCTRL_STAT_SELFREF_TYPE_MASK;
 #if STM32MP_LPDDR4_TYPE
 		state = mmio_read_32(stm32mp_ddrctrl_base() + DDRCTRL_STAT) &
-				    DDRCTRL_STAT_SELFREF_STATE_MASK;
+		       DDRCTRL_STAT_SELFREF_STATE_MASK;
 #endif /* STM32MP_LPDDR4_TYPE */
 
 		if (timeout_elapsed(timeout)) {
@@ -201,15 +201,15 @@ static int sr_loop(bool is_entry)
 
 		if (is_entry) {
 #if STM32MP_LPDDR4_TYPE
-			repeat_loop = (type == 0x0) || (state != DDRCTRL_STAT_SELFREF_STATE_SRPD);
-#else /* STM32MP_LPDDR4_TYPE */
-			repeat_loop = (type == 0x0);
+			repeat_loop = (type == 0x0U) || (state != DDRCTRL_STAT_SELFREF_STATE_SRPD);
+#else /* !STM32MP_LPDDR4_TYPE */
+			repeat_loop = (type == 0x0U);
 #endif /* STM32MP_LPDDR4_TYPE */
 		} else {
 #if STM32MP_LPDDR4_TYPE
-			repeat_loop = (type != 0x0) || (state != 0x0);
-#else /* STM32MP_LPDDR4_TYPE */
-			repeat_loop = (type != 0x0);
+			repeat_loop = (type != 0x0U) || (state != 0x0U);
+#else /* !STM32MP_LPDDR4_TYPE */
+			repeat_loop = (type != 0x0U);
 #endif /* STM32MP_LPDDR4_TYPE */
 		}
 	} while (repeat_loop);
@@ -368,7 +368,7 @@ static int sr_hsr_exit(void)
 
 static int sr_asr_set(void)
 {
-	mmio_write_32(stm32_ddrdbg_get_base() + DDRDBG_LP_DISABLE, 0);
+	mmio_write_32(stm32_ddrdbg_get_base() + DDRDBG_LP_DISABLE, 0U);
 
 	return 0;
 }

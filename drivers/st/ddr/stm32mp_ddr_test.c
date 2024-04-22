@@ -13,7 +13,7 @@
 #ifdef __aarch64__
 #define DDR_PATTERN	0xAAAAAAAAAAAAAAAAUL
 #define DDR_ANTIPATTERN	0x5555555555555555UL
-#else /* __aarch64__ */
+#else /* !__aarch64__ */
 #define DDR_PATTERN	0xAAAAAAAAU
 #define DDR_ANTIPATTERN	0x55555555U
 #endif /* __aarch64__ */
@@ -22,7 +22,7 @@ static void mmio_write_pattern(uintptr_t addr, u_register_t value)
 {
 #ifdef __aarch64__
 	mmio_write_64(addr, (uint64_t)value);
-#else /* __aarch64__ */
+#else /* !__aarch64__ */
 	mmio_write_32(addr, (uint32_t)value);
 #endif /* __aarch64__ */
 }
@@ -31,7 +31,7 @@ static u_register_t mmio_read_pattern(uintptr_t addr)
 {
 #ifdef __aarch64__
 	return (u_register_t)mmio_read_64(addr);
-#else /* __aarch64__ */
+#else /* !__aarch64__ */
 	return (u_register_t)mmio_read_32(addr);
 #endif /* __aarch64__ */
 }

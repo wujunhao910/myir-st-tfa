@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2023, STMicroelectronics - All Rights Reserved
+ * Copyright (c) 2022-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
  */
@@ -157,7 +157,7 @@ struct stm32mp_ddrctl {
 	uint32_t pcfgqos1_1;	/* 0x548 Read QoS Configuration 1 */
 	uint32_t pcfgwqos0_1;	/* 0x54c Write QoS Configuration 0 */
 	uint32_t pcfgwqos1_1;	/* 0x550 Write QoS Configuration 1 */
-#endif
+#endif /* STM32MP_DDR_DUAL_AXI_PORT */
 
 	uint8_t reserved554[0xff0 - 0x554];
 	uint32_t umctl2_ver_number;	/* 0xff0 UMCTL2 Version Number */
@@ -186,7 +186,7 @@ struct stm32mp_ddrctl {
 #define DDRCTRL_PCTRL_0				0x490
 #if STM32MP_DDR_DUAL_AXI_PORT
 #define DDRCTRL_PCTRL_1				0x540
-#endif
+#endif /* STM32MP_DDR_DUAL_AXI_PORT */
 
 /* DDR Controller Register fields */
 #define DDRCTRL_MSTR_DDR3			BIT(0)

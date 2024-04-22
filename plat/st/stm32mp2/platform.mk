@@ -263,7 +263,6 @@ BL2_SOURCES		+=	drivers/st/ddr/stm32mp2_ddr.c				\
 
 BL2_SOURCES		+=	drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_c_initphyconfig.c				\
 				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_calcmb.c					\
-				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_globals.c					\
 				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_i_loadpieimage.c				\
 				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_initstruct.c				\
 				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_isdbytedisabled.c				\
@@ -274,17 +273,13 @@ BL2_SOURCES		+=	drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_c_initphyconfig.c	
 				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_restore_sequence.c			\
 				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_sequence.c				\
 				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_softsetmb.c				\
-				drivers/st/ddr/phy/phyinit/usercustom/ddrphy_phyinit_usercustom_customposttrain.c	\
 				drivers/st/ddr/phy/phyinit/usercustom/ddrphy_phyinit_usercustom_custompretrain.c	\
 				drivers/st/ddr/phy/phyinit/usercustom/ddrphy_phyinit_usercustom_saveretregs.c
 
 BL2_SOURCES		+=	drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_d_loadimem.c				\
 				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_f_loaddmem.c				\
 				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_g_execfw.c				\
-				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_h_readmsgblock.c				\
-				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_storemsgblk.c				\
 				drivers/st/ddr/phy/phyinit/src/ddrphy_phyinit_writeoutmem.c				\
-				drivers/st/ddr/phy/phyinit/usercustom/ddrphy_phyinit_usercustom_h_readmsgblock.c 	\
 				drivers/st/ddr/phy/phyinit/usercustom/ddrphy_phyinit_usercustom_g_waitfwdone.c
 endif #STM32MP_M33_TDCID
 

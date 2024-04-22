@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2023, STMicroelectronics - All Rights Reserved
+ * Copyright (C) 2021-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
  */
@@ -19,58 +19,49 @@
 #include <lib/mmio.h>
 #include <libfdt.h>
 
-#include <ddrphy_phyinit.h>
-
 #include <platform_def.h>
-
-struct stm32mp2_ddr_ui_config {
-	void *basic;		/* Pointer to user_input basic structure */
-	void *advanced;		/* Pointer to user_input advanced structure */
-	void *mode_register;	/* Pointer to user_input mode register structure */
-	void *swizzle;		/* Pointer to user_input swizzle structure */
-};
 
 static struct stm32mp_ddr_priv ddr_priv_data;
 static bool ddr_self_refresh;
 
-static int ddr_dt_get_ui_param(void *fdt, int node, struct stm32mp2_ddr_ui_config *ui_config)
+static int ddr_dt_get_ui_param(void *fdt, int node, struct stm32mp_ddr_config *config)
 {
 	int ret;
 	uint32_t size;
 
 	size = sizeof(struct user_input_basic) / sizeof(int);
-	ret = fdt_read_uint32_array(fdt, node, "st,phy-basic", size, ui_config->basic);
+	ret = fdt_read_uint32_array(fdt, node, "st,phy-basic", size, (uint32_t *)&config->uib);
 
 	VERBOSE("%s: %s[0x%x] = %d\n", __func__, "st,phy-basic", size, ret);
 	if (ret != 0) {
-		ERROR("%s: Cannot read %s, error=%d\n", __func__, "st,phy-basic", ret);
+		ERROR("%s: can't read %s, error=%d\n", __func__, "st,phy-basic", ret);
 		return -EINVAL;
 	}
 
 	size = sizeof(struct user_input_advanced) / sizeof(int);
-	ret = fdt_read_uint32_array(fdt, node, "st,phy-advanced", size, ui_config->advanced);
+	ret = fdt_read_uint32_array(fdt, node, "st,phy-advanced", size, (uint32_t *)&config->uia);
 
 	VERBOSE("%s: %s[0x%x] = %d\n", __func__, "st,phy-advanced", size, ret);
 	if (ret != 0) {
-		ERROR("%s: Cannot read %s, error=%d\n", __func__, "st,phy-advanced", ret);
+		ERROR("%s: can't read %s, error=%d\n", __func__, "st,phy-advanced", ret);
 		return -EINVAL;
 	}
 
 	size = sizeof(struct user_input_mode_register) / sizeof(int);
-	ret = fdt_read_uint32_array(fdt, node, "st,phy-mr", size, ui_config->mode_register);
+	ret = fdt_read_uint32_array(fdt, node, "st,phy-mr", size, (uint32_t *)&config->uim);
 
 	VERBOSE("%s: %s[0x%x] = %d\n", __func__, "st,phy-mr", size, ret);
 	if (ret != 0) {
-		ERROR("%s: Cannot read %s, error=%d\n", __func__, "st,phy-mr", ret);
+		ERROR("%s: can't read %s, error=%d\n", __func__, "st,phy-mr", ret);
 		return -EINVAL;
 	}
 
 	size = sizeof(struct user_input_swizzle) / sizeof(int);
-	ret = fdt_read_uint32_array(fdt, node, "st,phy-swizzle", size, ui_config->swizzle);
+	ret = fdt_read_uint32_array(fdt, node, "st,phy-swizzle", size, (uint32_t *)&config->uis);
 
 	VERBOSE("%s: %s[0x%x] = %d\n", __func__, "st,phy-swizzle", size, ret);
 	if (ret != 0) {
-		ERROR("%s: Cannot read %s, error=%d\n", __func__, "st,phy-swizzle", ret);
+		ERROR("%s: can't read %s, error=%d\n", __func__, "st,phy-swizzle", ret);
 		return -EINVAL;
 	}
 
@@ -82,12 +73,6 @@ static int stm32mp2_ddr_setup(void)
 	struct stm32mp_ddr_priv *priv = &ddr_priv_data;
 	int ret;
 	struct stm32mp_ddr_config config;
-	struct stm32mp2_ddr_ui_config ui_config = {
-		ddrphy_phyinit_get_user_input_basic_base(),
-		ddrphy_phyinit_get_user_input_advanced_base(),
-		ddrphy_phyinit_get_user_input_mode_register_base(),
-		ddrphy_phyinit_get_user_input_swizzle_base(),
-	};
 	int node;
 	uintptr_t uret;
 	void *fdt;
@@ -105,7 +90,7 @@ static int stm32mp2_ddr_setup(void)
 
 	node = fdt_node_offset_by_compatible(fdt, -1, DT_DDR_COMPAT);
 	if (node < 0) {
-		ERROR("%s: Cannot read DDR node in DT\n", __func__);
+		ERROR("%s: can't read DDR node in DT\n", __func__);
 		return -EINVAL;
 	}
 
@@ -119,7 +104,7 @@ static int stm32mp2_ddr_setup(void)
 		return ret;
 	}
 
-	ret = ddr_dt_get_ui_param(fdt, node, &ui_config);
+	ret = ddr_dt_get_ui_param(fdt, node, &config);
 	if (ret < 0) {
 		return ret;
 	}
@@ -153,7 +138,7 @@ static int stm32mp2_ddr_setup(void)
 	if (config.self_refresh) {
 		uret = stm32mp_ddr_test_rw_access();
 		if (uret != 0UL) {
-			ERROR("DDR rw test: Can't access memory @ 0x%lx\n", uret);
+			ERROR("DDR rw test: can't access memory @ 0x%lx\n", uret);
 			panic();
 		}
 

@@ -9,7 +9,6 @@
 #include <common/debug.h>
 #include <drivers/delay_timer.h>
 #include <drivers/st/stm32mp_ddr.h>
-#include <drivers/st/stm32mp2_ddr.h>
 #include <drivers/st/stm32mp2_ddr_helpers.h>
 #include <drivers/st/stm32mp2_ddr_regs.h>
 #include <lib/mmio.h>
@@ -22,17 +21,9 @@
 
 #define DDRCTL_REG(x, y, z)					\
 	{							\
-		.name = #x,					\
 		.offset = offsetof(struct stm32mp_ddrctl, x),	\
 		.par_offset = offsetof(struct y, x),		\
 		.qd = z						\
-	}
-
-#define DDRPHY_REG(x, y)					\
-	{							\
-		.name = #x,					\
-		.offset = offsetof(struct stm32mp_ddrphy, x),	\
-		.par_offset = offsetof(struct y, x)		\
 	}
 
 /*
@@ -45,9 +36,9 @@
 #define DDRCTL_REG_MAP_SIZE	12	/* st,ctl-map */
 #if STM32MP_DDR_DUAL_AXI_PORT
 #define DDRCTL_REG_PERF_SIZE	21	/* st,ctl-perf */
-#else
+#else /* !STM32MP_DDR_DUAL_AXI_PORT */
 #define DDRCTL_REG_PERF_SIZE	14	/* st,ctl-perf */
-#endif
+#endif /* STM32MP_DDR_DUAL_AXI_PORT */
 
 #define DDRPHY_REG_REG_SIZE	0	/* st,phy-reg */
 #define	DDRPHY_REG_TIMING_SIZE	0	/* st,phy-timing */
@@ -168,7 +159,7 @@ static const struct stm32mp_ddr_reg_desc ddr_perf[DDRCTL_REG_PERF_SIZE] = {
 	DDRCTL_REG_PERF(pcfgqos1_1, true),
 	DDRCTL_REG_PERF(pcfgwqos0_1, true),
 	DDRCTL_REG_PERF(pcfgwqos1_1, true),
-#endif
+#endif /* STM32MP_DDR_DUAL_AXI_PORT */
 };
 
 static const struct stm32mp_ddr_reg_desc ddrphy_reg[DDRPHY_REG_REG_SIZE] = {};
@@ -275,13 +266,14 @@ static void ddr_standby_reset_release(struct stm32mp_ddr_priv *priv)
 	udelay(DDR_DELAY_1US);
 }
 
-static void ddr_sysconf_configuration(struct stm32mp_ddr_priv *priv)
+static void ddr_sysconf_configuration(struct stm32mp_ddr_priv *priv,
+				      struct stm32mp_ddr_config *config)
 {
 	mmio_write_32(stm32_ddrdbg_get_base() + DDRDBG_LP_DISABLE,
 		      DDRDBG_LP_DISABLE_LPI_XPI_DISABLE | DDRDBG_LP_DISABLE_LPI_DDRC_DISABLE);
 
 	mmio_write_32(stm32_ddrdbg_get_base() + DDRDBG_BYPASS_PCLKEN,
-		      (uint32_t)ddrphy_phyinit_get_user_input_basic_pllbypass_0());
+		      (uint32_t)config->uib.pllbypass);
 
 	mmio_write_32(priv->rcc + RCC_DDRPHYCCFGR, RCC_DDRPHYCCFGR_DDRPHYCEN);
 	mmio_setbits_32(priv->rcc + RCC_DDRITFCFGR, RCC_DDRITFCFGR_DDRRST);
@@ -417,7 +409,7 @@ void stm32mp2_ddr_init(struct stm32mp_ddr_priv *priv,
 
 		ddr_reset(priv);
 
-		ddr_sysconf_configuration(priv);
+		ddr_sysconf_configuration(priv, config);
 	}
 
 #if STM32MP_LPDDR4_TYPE
@@ -444,7 +436,7 @@ void stm32mp2_ddr_init(struct stm32mp_ddr_priv *priv,
 		ddr_standby_reset_release(priv);
 
 		/* Initialize DDR by skipping training and disabling result saving */
-		ret = ddrphy_phyinit_sequence(true, false);
+		ret = ddrphy_phyinit_sequence(config, true, false);
 
 		if (ret == 0) {
 			ret = ddrphy_phyinit_restore_sequence();
@@ -454,7 +446,7 @@ void stm32mp2_ddr_init(struct stm32mp_ddr_priv *priv,
 		ddr_wait_lp3_mode(false);
 	} else {
 		/* Initialize DDR including training and result saving */
-		ret = ddrphy_phyinit_sequence(false, true);
+		ret = ddrphy_phyinit_sequence(config, false, true);
 	}
 
 	if (ret != 0) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2022, STMicroelectronics - All Rights Reserved
+ * Copyright (C) 2018-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
  */
@@ -24,14 +24,12 @@
 
 #define DDRCTL_REG(x, y)					\
 	{							\
-		.name = #x,					\
 		.offset = offsetof(struct stm32mp_ddrctl, x),	\
 		.par_offset = offsetof(struct y, x)		\
 	}
 
 #define DDRPHY_REG(x, y)					\
 	{							\
-		.name = #x,					\
 		.offset = offsetof(struct stm32mp_ddrphy, x),	\
 		.par_offset = offsetof(struct y, x)		\
 	}
