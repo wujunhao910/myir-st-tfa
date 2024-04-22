@@ -413,7 +413,7 @@ static void stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 
 	case PWRSTATE_LP_STOP2:
 		VERBOSE("LP_STOP2 enter\n");
-		mmio_write_32(pwr_base + PWR_CPU1CR, PWR_CPU1CR_PDDS_D1 | PWR_CPU1CR_LPDS_D1);
+		mmio_write_32(pwr_base + PWR_CPU1CR, PWR_CPU1CR_PDDS_D1);
 		mmio_write_32(pwr_base + PWR_CPU2CR, PWR_CPU2CR_LPDS_D2);
 
 		stm32mp_gic_cpuif_disable();
@@ -423,8 +423,7 @@ static void stm32_pwr_domain_suspend(const psci_power_state_t *target_state)
 
 	case PWRSTATE_LPLV_STOP2:
 		VERBOSE("LPLV_STOP2 enter\n");
-		mmio_write_32(pwr_base + PWR_CPU1CR,
-			      PWR_CPU1CR_PDDS_D1 | PWR_CPU1CR_LPDS_D1 | PWR_CPU1CR_LVDS_D1);
+		mmio_write_32(pwr_base + PWR_CPU1CR, PWR_CPU1CR_PDDS_D1);
 		mmio_write_32(pwr_base + PWR_CPU2CR, PWR_CPU2CR_LPDS_D2 | PWR_CPU2CR_LVDS_D2);
 
 		stm32mp_gic_cpuif_disable();
