@@ -320,6 +320,9 @@ void stm32mp_get_soc_name(char name[STM32_SOC_NAME_SIZE])
 
 	/* REVISION */
 	switch (stm32mp_get_chip_version()) {
+#if STM32MP25
+	case 0:
+#endif
 	case STM32MP2_REV_B:
 		cpu_r = "B";
 		break;
