@@ -49,7 +49,10 @@
 #define STM32MP257D_PART_NB	U(0xC0002E00)
 #define STM32MP257F_PART_NB	U(0x80002000)
 
-#define STM32MP2_REV_B		U(0x2000)
+#define STM32MP2_REV_B		U(0x10)
+#define STM32MP2_REV_X		U(0x12)
+#define STM32MP2_REV_Y		U(0x11)
+#define STM32MP2_REV_Z		U(0x09)
 
 /*******************************************************************************
  * PACKAGE ID
@@ -365,6 +368,7 @@ enum ddr_type {
 
 /* OTP labels */
 #define PART_NUMBER_OTP			"part_number_otp"
+#define REVISION_OTP			"rev_otp"
 #define PACKAGE_OTP			"package_otp"
 #define HCONF1_OTP			"otp124"
 #define NAND_OTP			"otp16"

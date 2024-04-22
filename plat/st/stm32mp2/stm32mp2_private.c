@@ -194,7 +194,17 @@ uintptr_t stm32_get_header_address(void)
 
 uint32_t stm32mp_get_chip_version(void)
 {
-	return stm32mp_syscfg_get_chip_version();
+	static uint32_t rev;
+
+	if (rev != 0U) {
+		return rev;
+	}
+
+	if (stm32_get_otp_value(REVISION_OTP, &rev) != 0) {
+		panic();
+	}
+
+	return rev;
 }
 
 uint32_t stm32mp_get_chip_dev_id(void)
@@ -312,6 +322,15 @@ void stm32mp_get_soc_name(char name[STM32_SOC_NAME_SIZE])
 	switch (stm32mp_get_chip_version()) {
 	case STM32MP2_REV_B:
 		cpu_r = "B";
+		break;
+	case STM32MP2_REV_X:
+		cpu_r = "X";
+		break;
+	case STM32MP2_REV_Y:
+		cpu_r = "Y";
+		break;
+	case STM32MP2_REV_Z:
+		cpu_r = "Z";
 		break;
 	default:
 		cpu_r = "?";

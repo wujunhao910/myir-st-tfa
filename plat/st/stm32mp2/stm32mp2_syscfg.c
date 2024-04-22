@@ -115,16 +115,6 @@ static uint32_t syscfg_cccr_offset[SYSFG_NB_IO_ID] = {
 };
 
 /*
- * @brief  Get silicon revision from SYSCFG registers.
- * @retval chip version (REV_ID).
- */
-uint32_t stm32mp_syscfg_get_chip_version(void)
-{
-	return (mmio_read_32(SYSCFG_BASE + SYSCFG_DEVICEID) &
-		SYSCFG_DEVICEID_REV_ID_MASK) >> SYSCFG_DEVICEID_REV_ID_SHIFT;
-}
-
-/*
  * @brief  Get device ID from SYSCFG registers.
  * @retval device ID (DEV_ID).
  */
