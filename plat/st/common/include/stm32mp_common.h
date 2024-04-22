@@ -10,6 +10,7 @@
 #include <stdbool.h>
 
 #include <platform_def.h>
+#include <drivers/st/nvmem.h>
 
 #define JEDEC_ST_BKID U(0x0)
 #define JEDEC_ST_MFID U(0x20)
@@ -167,9 +168,6 @@ int stm32mp_unmap_retram(void);
 void stm32_save_boot_info(boot_api_context_t *boot_context);
 /* Function to get boot peripheral info */
 void stm32_get_boot_interface(uint32_t *interface, uint32_t *instance);
-/* Function to get BOOT_MODE backup register address */
-uintptr_t stm32_get_bkpr_boot_mode_addr(void);
-uintptr_t stm32_get_bkpr_stop2_ep_addr(void);
 
 /* Display board information from the value found in OTP fuse */
 void stm32_display_board_info(uint32_t board_id);
@@ -190,7 +188,6 @@ int stm32_get_core1_branch_address_cell(struct nvmem_cell *core1_branch_address)
 #endif
 
 #if PSA_FWU_SUPPORT
-uintptr_t stm32_get_bkpr_fwu_info_addr(void);
 void stm32_fwu_set_boot_idx(void);
 uint32_t stm32_get_and_dec_fwu_trial_boot_cnt(void);
 void stm32_set_max_fwu_trial_boot_cnt(void);

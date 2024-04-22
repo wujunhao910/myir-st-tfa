@@ -581,23 +581,6 @@ size_t stm32_risaf_get_memory_size(int instance)
 	}
 }
 
-uintptr_t stm32_get_bkpr_boot_mode_addr(void)
-{
-	return tamp_bkpr(96);
-}
-
-uintptr_t stm32_get_bkpr_stop2_ep_addr(void)
-{
-	return tamp_bkpr(11);
-}
-
-#if PSA_FWU_SUPPORT
-uintptr_t stm32_get_bkpr_fwu_info_addr(void)
-{
-	return tamp_bkpr(48);
-}
-#endif /* PSA_FWU_SUPPORT */
-
 uintptr_t stm32_ddrdbg_get_base(void)
 {
 	return DDRDBG_BASE;
