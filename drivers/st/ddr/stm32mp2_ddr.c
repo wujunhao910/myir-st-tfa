@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2023, STMicroelectronics - All Rights Reserved
+ * Copyright (C) 2021-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -20,11 +20,12 @@
 
 #define DDRDBG_FRAC_PLL_LOCK	U(0x10)
 
-#define DDRCTL_REG(x, y)					\
+#define DDRCTL_REG(x, y, z)					\
 	{							\
 		.name = #x,					\
 		.offset = offsetof(struct stm32mp_ddrctl, x),	\
-		.par_offset = offsetof(struct y, x)		\
+		.par_offset = offsetof(struct y, x),		\
+		.qd = z						\
 	}
 
 #define DDRPHY_REG(x, y)					\
@@ -51,83 +52,83 @@
 #define DDRPHY_REG_REG_SIZE	0	/* st,phy-reg */
 #define	DDRPHY_REG_TIMING_SIZE	0	/* st,phy-timing */
 
-#define DDRCTL_REG_REG(x)	DDRCTL_REG(x, stm32mp2_ddrctrl_reg)
+#define DDRCTL_REG_REG(x, z)	DDRCTL_REG(x, stm32mp2_ddrctrl_reg, z)
 static const struct stm32mp_ddr_reg_desc ddr_reg[DDRCTL_REG_REG_SIZE] = {
-	DDRCTL_REG_REG(mstr),
-	DDRCTL_REG_REG(mrctrl0),
-	DDRCTL_REG_REG(mrctrl1),
-	DDRCTL_REG_REG(mrctrl2),
-	DDRCTL_REG_REG(derateen),
-	DDRCTL_REG_REG(derateint),
-	DDRCTL_REG_REG(deratectl),
-	DDRCTL_REG_REG(pwrctl),
-	DDRCTL_REG_REG(pwrtmg),
-	DDRCTL_REG_REG(hwlpctl),
-	DDRCTL_REG_REG(rfshctl0),
-	DDRCTL_REG_REG(rfshctl1),
-	DDRCTL_REG_REG(rfshctl3),
-	DDRCTL_REG_REG(crcparctl0),
-	DDRCTL_REG_REG(crcparctl1),
-	DDRCTL_REG_REG(init0),
-	DDRCTL_REG_REG(init1),
-	DDRCTL_REG_REG(init2),
-	DDRCTL_REG_REG(init3),
-	DDRCTL_REG_REG(init4),
-	DDRCTL_REG_REG(init5),
-	DDRCTL_REG_REG(init6),
-	DDRCTL_REG_REG(init7),
-	DDRCTL_REG_REG(dimmctl),
-	DDRCTL_REG_REG(rankctl),
-	DDRCTL_REG_REG(rankctl1),
-	DDRCTL_REG_REG(zqctl0),
-	DDRCTL_REG_REG(zqctl1),
-	DDRCTL_REG_REG(zqctl2),
-	DDRCTL_REG_REG(dfitmg0),
-	DDRCTL_REG_REG(dfitmg1),
-	DDRCTL_REG_REG(dfilpcfg0),
-	DDRCTL_REG_REG(dfilpcfg1),
-	DDRCTL_REG_REG(dfiupd0),
-	DDRCTL_REG_REG(dfiupd1),
-	DDRCTL_REG_REG(dfiupd2),
-	DDRCTL_REG_REG(dfimisc),
-	DDRCTL_REG_REG(dfitmg2),
-	DDRCTL_REG_REG(dfitmg3),
-	DDRCTL_REG_REG(dbictl),
-	DDRCTL_REG_REG(dfiphymstr),
-	DDRCTL_REG_REG(dbg0),
-	DDRCTL_REG_REG(dbg1),
-	DDRCTL_REG_REG(dbgcmd),
-	DDRCTL_REG_REG(swctl),
-	DDRCTL_REG_REG(swctlstatic),
-	DDRCTL_REG_REG(poisoncfg),
-	DDRCTL_REG_REG(pccfg),
+	DDRCTL_REG_REG(mstr, true),
+	DDRCTL_REG_REG(mrctrl0, false),
+	DDRCTL_REG_REG(mrctrl1, false),
+	DDRCTL_REG_REG(mrctrl2, false),
+	DDRCTL_REG_REG(derateen, true),
+	DDRCTL_REG_REG(derateint, false),
+	DDRCTL_REG_REG(deratectl, false),
+	DDRCTL_REG_REG(pwrctl, false),
+	DDRCTL_REG_REG(pwrtmg, true),
+	DDRCTL_REG_REG(hwlpctl, true),
+	DDRCTL_REG_REG(rfshctl0, false),
+	DDRCTL_REG_REG(rfshctl1, false),
+	DDRCTL_REG_REG(rfshctl3, true),
+	DDRCTL_REG_REG(crcparctl0, false),
+	DDRCTL_REG_REG(crcparctl1, false),
+	DDRCTL_REG_REG(init0, true),
+	DDRCTL_REG_REG(init1, false),
+	DDRCTL_REG_REG(init2, false),
+	DDRCTL_REG_REG(init3, true),
+	DDRCTL_REG_REG(init4, true),
+	DDRCTL_REG_REG(init5, false),
+	DDRCTL_REG_REG(init6, true),
+	DDRCTL_REG_REG(init7, true),
+	DDRCTL_REG_REG(dimmctl, false),
+	DDRCTL_REG_REG(rankctl, true),
+	DDRCTL_REG_REG(rankctl1, true),
+	DDRCTL_REG_REG(zqctl0, true),
+	DDRCTL_REG_REG(zqctl1, false),
+	DDRCTL_REG_REG(zqctl2, false),
+	DDRCTL_REG_REG(dfitmg0, true),
+	DDRCTL_REG_REG(dfitmg1, true),
+	DDRCTL_REG_REG(dfilpcfg0, false),
+	DDRCTL_REG_REG(dfilpcfg1, false),
+	DDRCTL_REG_REG(dfiupd0, true),
+	DDRCTL_REG_REG(dfiupd1, false),
+	DDRCTL_REG_REG(dfiupd2, false),
+	DDRCTL_REG_REG(dfimisc, true),
+	DDRCTL_REG_REG(dfitmg2, true),
+	DDRCTL_REG_REG(dfitmg3, false),
+	DDRCTL_REG_REG(dbictl, true),
+	DDRCTL_REG_REG(dfiphymstr, false),
+	DDRCTL_REG_REG(dbg0, false),
+	DDRCTL_REG_REG(dbg1, false),
+	DDRCTL_REG_REG(dbgcmd, false),
+	DDRCTL_REG_REG(swctl, false), /* forced qd value */
+	DDRCTL_REG_REG(swctlstatic, false),
+	DDRCTL_REG_REG(poisoncfg, false),
+	DDRCTL_REG_REG(pccfg, false),
 };
 
-#define DDRCTL_REG_TIMING(x)	DDRCTL_REG(x, stm32mp2_ddrctrl_timing)
+#define DDRCTL_REG_TIMING(x, z)	DDRCTL_REG(x, stm32mp2_ddrctrl_timing, z)
 static const struct stm32mp_ddr_reg_desc ddr_timing[DDRCTL_REG_TIMING_SIZE] = {
-	DDRCTL_REG_TIMING(rfshtmg),
-	DDRCTL_REG_TIMING(rfshtmg1),
-	DDRCTL_REG_TIMING(dramtmg0),
-	DDRCTL_REG_TIMING(dramtmg1),
-	DDRCTL_REG_TIMING(dramtmg2),
-	DDRCTL_REG_TIMING(dramtmg3),
-	DDRCTL_REG_TIMING(dramtmg4),
-	DDRCTL_REG_TIMING(dramtmg5),
-	DDRCTL_REG_TIMING(dramtmg6),
-	DDRCTL_REG_TIMING(dramtmg7),
-	DDRCTL_REG_TIMING(dramtmg8),
-	DDRCTL_REG_TIMING(dramtmg9),
-	DDRCTL_REG_TIMING(dramtmg10),
-	DDRCTL_REG_TIMING(dramtmg11),
-	DDRCTL_REG_TIMING(dramtmg12),
-	DDRCTL_REG_TIMING(dramtmg13),
-	DDRCTL_REG_TIMING(dramtmg14),
-	DDRCTL_REG_TIMING(dramtmg15),
-	DDRCTL_REG_TIMING(odtcfg),
-	DDRCTL_REG_TIMING(odtmap),
+	DDRCTL_REG_TIMING(rfshtmg, false),
+	DDRCTL_REG_TIMING(rfshtmg1, false),
+	DDRCTL_REG_TIMING(dramtmg0, true),
+	DDRCTL_REG_TIMING(dramtmg1, true),
+	DDRCTL_REG_TIMING(dramtmg2, true),
+	DDRCTL_REG_TIMING(dramtmg3, true),
+	DDRCTL_REG_TIMING(dramtmg4, true),
+	DDRCTL_REG_TIMING(dramtmg5, true),
+	DDRCTL_REG_TIMING(dramtmg6, true),
+	DDRCTL_REG_TIMING(dramtmg7, true),
+	DDRCTL_REG_TIMING(dramtmg8, true),
+	DDRCTL_REG_TIMING(dramtmg9, true),
+	DDRCTL_REG_TIMING(dramtmg10, true),
+	DDRCTL_REG_TIMING(dramtmg11, true),
+	DDRCTL_REG_TIMING(dramtmg12, true),
+	DDRCTL_REG_TIMING(dramtmg13, true),
+	DDRCTL_REG_TIMING(dramtmg14, true),
+	DDRCTL_REG_TIMING(dramtmg15, true),
+	DDRCTL_REG_TIMING(odtcfg, true),
+	DDRCTL_REG_TIMING(odtmap, false),
 };
 
-#define DDRCTL_REG_MAP(x)	DDRCTL_REG(x, stm32mp2_ddrctrl_map)
+#define DDRCTL_REG_MAP(x)	DDRCTL_REG(x, stm32mp2_ddrctrl_map, false)
 static const struct stm32mp_ddr_reg_desc ddr_map[DDRCTL_REG_MAP_SIZE] = {
 	DDRCTL_REG_MAP(addrmap0),
 	DDRCTL_REG_MAP(addrmap1),
@@ -143,30 +144,30 @@ static const struct stm32mp_ddr_reg_desc ddr_map[DDRCTL_REG_MAP_SIZE] = {
 	DDRCTL_REG_MAP(addrmap11),
 };
 
-#define DDRCTL_REG_PERF(x)	DDRCTL_REG(x, stm32mp2_ddrctrl_perf)
+#define DDRCTL_REG_PERF(x, z)	DDRCTL_REG(x, stm32mp2_ddrctrl_perf, z)
 static const struct stm32mp_ddr_reg_desc ddr_perf[DDRCTL_REG_PERF_SIZE] = {
-	DDRCTL_REG_PERF(sched),
-	DDRCTL_REG_PERF(sched1),
-	DDRCTL_REG_PERF(perfhpr1),
-	DDRCTL_REG_PERF(perflpr1),
-	DDRCTL_REG_PERF(perfwr1),
-	DDRCTL_REG_PERF(sched3),
-	DDRCTL_REG_PERF(sched4),
-	DDRCTL_REG_PERF(pcfgr_0),
-	DDRCTL_REG_PERF(pcfgw_0),
-	DDRCTL_REG_PERF(pctrl_0),
-	DDRCTL_REG_PERF(pcfgqos0_0),
-	DDRCTL_REG_PERF(pcfgqos1_0),
-	DDRCTL_REG_PERF(pcfgwqos0_0),
-	DDRCTL_REG_PERF(pcfgwqos1_0),
+	DDRCTL_REG_PERF(sched, true),
+	DDRCTL_REG_PERF(sched1, false),
+	DDRCTL_REG_PERF(perfhpr1, true),
+	DDRCTL_REG_PERF(perflpr1, true),
+	DDRCTL_REG_PERF(perfwr1, true),
+	DDRCTL_REG_PERF(sched3, false),
+	DDRCTL_REG_PERF(sched4, false),
+	DDRCTL_REG_PERF(pcfgr_0, false),
+	DDRCTL_REG_PERF(pcfgw_0, false),
+	DDRCTL_REG_PERF(pctrl_0, false),
+	DDRCTL_REG_PERF(pcfgqos0_0, true),
+	DDRCTL_REG_PERF(pcfgqos1_0, true),
+	DDRCTL_REG_PERF(pcfgwqos0_0, true),
+	DDRCTL_REG_PERF(pcfgwqos1_0, true),
 #if STM32MP_DDR_DUAL_AXI_PORT
-	DDRCTL_REG_PERF(pcfgr_1),
-	DDRCTL_REG_PERF(pcfgw_1),
-	DDRCTL_REG_PERF(pctrl_1),
-	DDRCTL_REG_PERF(pcfgqos0_1),
-	DDRCTL_REG_PERF(pcfgqos1_1),
-	DDRCTL_REG_PERF(pcfgwqos0_1),
-	DDRCTL_REG_PERF(pcfgwqos1_1),
+	DDRCTL_REG_PERF(pcfgr_1, false),
+	DDRCTL_REG_PERF(pcfgw_1, false),
+	DDRCTL_REG_PERF(pctrl_1, false),
+	DDRCTL_REG_PERF(pcfgqos0_1, true),
+	DDRCTL_REG_PERF(pcfgqos1_1, true),
+	DDRCTL_REG_PERF(pcfgwqos0_1, true),
+	DDRCTL_REG_PERF(pcfgwqos1_1, true),
 #endif
 };
 

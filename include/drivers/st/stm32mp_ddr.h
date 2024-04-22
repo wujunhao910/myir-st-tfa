@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023, STMicroelectronics - All Rights Reserved
+ * Copyright (C) 2022-2024, STMicroelectronics - All Rights Reserved
  *
  * SPDX-License-Identifier: GPL-2.0+ OR BSD-3-Clause
  */
@@ -29,6 +29,9 @@ struct stm32mp_ddr_reg_desc {
 	const char *name;
 	uint16_t offset;	/* Offset for base address */
 	uint8_t par_offset;	/* Offset for parameter array */
+#if STM32MP25
+	bool qd; /* quasi-dynamic register if true */
+#endif
 };
 
 struct stm32mp_ddr_reg_info {
