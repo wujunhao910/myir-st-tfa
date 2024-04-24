@@ -111,7 +111,11 @@ FDT_SOURCES		+=	$(addprefix $(DT_SOURCE_PATH)/, $(patsubst %.dtb,%.dts,$(STM32MP
 # Add the FW_CONFIG to FIP and specify the same to certtool
 $(eval $(call TOOL_ADD_PAYLOAD,${STM32MP_FW_CONFIG},--fw-config))
 # Add the SOC_FW_CONFIG to FIP and specify the same to certtool
+ifeq ($(ENCRYPT_BL31),1)
 $(eval $(call TOOL_ADD_IMG,STM32MP_SOC_FW_CONFIG,--soc-fw-config,,$(ENCRYPT_BL31)))
+else
+$(eval $(call TOOL_ADD_PAYLOAD,${STM32MP_SOC_FW_CONFIG},--soc-fw-config))
+endif
 ifeq (${STM32MP_DDR_FIP_IO_STORAGE},1)
 # Add the FW_DDR to FIP and specify the same to certtool
 $(eval $(call TOOL_ADD_IMG,STM32MP_DDR_FW,--ddr-fw))
