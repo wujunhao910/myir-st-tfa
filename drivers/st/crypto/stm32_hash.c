@@ -336,6 +336,11 @@ int stm32_hash_register(void)
 	int node;
 	int ret;
 
+	if (stm32_hash.base != 0U) {
+	/* Driver is already initialized */
+		return 0;
+	}
+
 	for (node = dt_get_node(&hash_info, -1, DT_HASH_COMPAT);
 	     node != -FDT_ERR_NOTFOUND;
 	     node = dt_get_node(&hash_info, node, DT_HASH_COMPAT)) {
