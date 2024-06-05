@@ -495,10 +495,10 @@ skip_console_init:
 	/*
 	 * Set USB3DR Peripheriphal accesses to Secure/Privilege only
 	 */
-	mmio_write_32(RIFSC_BASE + _RIFSC_RISC_SECCFGR(STM32MP25_RIFSC_USB3DR_ID),
-		     RIFSC_USB3DR_SEC);
-	mmio_write_32(RIFSC_BASE + _RIFSC_RISC_PRIVCFGR(STM32MP25_RIFSC_USB3DR_ID),
-		      RIFSC_USB3DR_PRIV);
+	mmio_setbits_32(RIFSC_BASE + _RIFSC_RISC_SECCFGR(STM32MP25_RIFSC_USB3DR_ID),
+			RIFSC_USB3DR_SEC);
+	mmio_setbits_32(RIFSC_BASE + _RIFSC_RISC_PRIVCFGR(STM32MP25_RIFSC_USB3DR_ID),
+			RIFSC_USB3DR_PRIV);
 
 	/*
 	 * Apply USB boot specific configuration to RIF master USB3DR
